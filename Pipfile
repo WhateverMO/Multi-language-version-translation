@@ -13,6 +13,11 @@ flask-script = "*"
 flask-migrate = "*"
 markupsafe = "==2.0.1"
 requests = "*"
+torchtext = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+jieba = "*"
 
 [dev-packages]
 
