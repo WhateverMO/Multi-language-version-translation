@@ -70,7 +70,7 @@ def test():
     print('data loaded')
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_ID)         # 忽略 占位符 索引为0.
     model.to(device=device)
-    model.load_state_dict(torch.load('model0_3000.pth'))
+    model.load_state_dict(torch.load('model0_0.pth'))
     model.eval()
     print('model loaded')
     tic = time.time()
@@ -159,7 +159,7 @@ def main():
             if cnter % print_interval == 0:
                 print(f'{cnter:08d} {minutes:02d}:{seconds:02d}'
                       f' loss: {loss.item()}')
-                if cnter % 50 == 0:
+                if cnter % (print_interval*50) == 0:
                     torch.save(model.state_dict(), f'model{epoch}_{cnter}.pth')
             cnter += 1
 
