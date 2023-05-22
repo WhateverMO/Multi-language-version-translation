@@ -36,6 +36,7 @@
 <script>
 import qs from "qs";
 import axios from "axios";
+import request from "@/request";
 export default {
   name: "enrollcenter",
   data() {
@@ -52,13 +53,14 @@ export default {
         password: this.password,
         password2: this.password2,
       };
-      const path = "http://localhost:5000/api/user/register";
-      await axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/user/register";
+      await request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           alert("你的用户id是:" + res.data.user_id);
           this.$store.commit("id", res.data.user_id);
           this.$store.commit("name", this.name);
+          this.$store.commit("image", res.data.picture);
           this.$store.commit("sex", "");
           this.$store.commit("place", "");
           this.$store.commit("intro", "");
@@ -86,6 +88,7 @@ export default {
 }
 img {
   width: 30vw;
+
   height: 50vh;
 }
 .el-icon-user,
@@ -95,10 +98,14 @@ img {
 }
 h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
 .el-button {
   width: 20vw;
   margin-left: 2vw;
+}
+.el-input {
+  margin-left: 10px;
 }
 .register {
   margin-left: 5vw;

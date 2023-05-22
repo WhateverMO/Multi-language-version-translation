@@ -21,20 +21,24 @@ export default {
   methods: {
     cancel(x) {
       axios
-        .post("http://localhost:5000/api/user/del_collect/" + x)
+        .post("http://192.168.111.142:8080/api/user/del_collect/" + x)
         .then((res) => {
           alert(res.data.msg);
         }); //拿阅读记录
-      axios.get("http://localhost:5000/api/user/get_collection").then((res) => {
-        this.books = res.data.collect_books;
-        this.$forceUpdate();
-      }); //拿阅读记录
+      axios
+        .get("http://192.168.111.142:8080/api/user/get_collection")
+        .then((res) => {
+          this.books = res.data.collect_books;
+          this.$forceUpdate();
+        }); //拿阅读记录
     },
   },
   mounted() {
-    axios.get("http://localhost:5000/api/user/get_collection").then((res) => {
-      this.books = res.data.collect_books;
-    }); //拿阅读记录
+    axios
+      .get("http://192.168.111.142:8080/api/user/get_collection")
+      .then((res) => {
+        this.books = res.data.collect_books;
+      }); //拿阅读记录
   },
 };
 </script>

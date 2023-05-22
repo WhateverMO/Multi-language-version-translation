@@ -23,6 +23,9 @@ const mutations = {
     sex(state, value) {
         state.sex = value
     },
+    image(state, value) {
+        state.image = value
+    },
     //图书阅读的id
     bookid(state, value) {
         state.bookid = value
@@ -48,12 +51,14 @@ const state = {
     place: '',
     intro: '',
     sex: '',
+    image: '',
     //创建图书
     bookid: '',
     createid: "",
     //翻译
     firstbookid: '',
     translatebookid: '',
+
 
 }
 Vue.use(Vuex);

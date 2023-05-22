@@ -30,7 +30,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "logincenter",
   data() {
@@ -48,25 +48,26 @@ export default {
         user_id: this.user_id,
         password: this.password,
       };
-      const path = "http://localhost:5000/api/user/login";
-      await axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/user/login";
+      await request.post(path, qs.stringify(data)).then((res) => {
+        console.log(res.data);
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/reader");
         }
       }); //post带参数的登录请求
 
-      await axios
-        .get("http://localhost:5000/api/user/information")
-        .then((res) => {
-          sessionStorage.setItem("id", res.data.user_id);
-          this.$store.commit("name", res.data.username);
-          this.$store.commit("sex", res.data.user_gender);
-          this.$store.commit("place", res.data.user_area);
-          this.$store.commit("intro", res.data.user_describe);
-          this.$store.commit("age", res.data.user_age);
-          this.$store.commit("id", res.data.user_id);
-        }); //给session发请求拿用户信息
+      await request.get("/api/user/information").then((res) => {
+        sessionStorage.setItem("id", res.data.user_id);
+        this.$store.commit("name", res.data.username);
+        this.$store.commit("sex", res.data.user_gender);
+        this.$store.commit("place", res.data.user_area);
+        this.$store.commit("intro", res.data.user_describe);
+        this.$store.commit("age", res.data.user_age);
+        this.$store.commit("id", res.data.user_id);
+        this.$store.commit("image", res.data.user_avatar);
+        console.log(res.data);
+      }); //给session发请求拿用户信息
     },
   },
 };
@@ -93,10 +94,14 @@ img {
 }
 h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
 .el-button {
   width: 20vw;
   margin-left: 2vw;
+}
+.el-input {
+  margin-left: 10px;
 }
 .register {
   margin-left: 5vw;

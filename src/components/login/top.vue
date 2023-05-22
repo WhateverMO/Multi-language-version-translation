@@ -17,8 +17,10 @@
       <el-menu-item index="7">推理</el-menu-item>
       <el-menu-item index="8">言情</el-menu-item>
       <el-menu-item index="9">更多</el-menu-item>
-      <el-input v-model="input" placeholder="请输入内容"></el-input>
-      <el-button type="primary" plain>搜索</el-button>
+      <div class="search">
+        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-button type="primary" plain>搜索</el-button>
+      </div>
     </el-menu>
   </div>
 </template>
@@ -41,21 +43,21 @@ export default {
 
 <style >
 .el-menu.el-menu--horizontal {
-  height: 10vh;
+  height: 8vh;
   display: flex;
   justify-content: space-between;
 }
 .el-menu-item {
-  margin-left: 5%;
-  font-size: 120%;
+  margin-left: 20px;
+  font-size: 15px;
 }
 .el-input {
   width: 20vw;
-  position: relative;
-  margin: auto;
 }
 .el-button {
   width: 10vw;
-  margin: auto;
+}
+.search {
+  margin-top: 10px;
 }
 </style>

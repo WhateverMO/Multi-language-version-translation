@@ -1,9 +1,9 @@
 <template>
   <div class="all">
     <div id="l">
-      <img src="@/assets/img/headimg.jpg" alt="" width="200px" height="200px" />
+      <img :src="$store.state.image" alt="" width="200px" height="200px" />
       <div class="intro">
-        <span>我的关注</span><span>我的图书</span
+        <span>我的关注</span><span>我的喜欢</span
         ><span @click="collect">我的收藏</span>
       </div>
       <div class="num">
@@ -27,15 +27,17 @@
         地区:<span>{{ $store.state.place }}</span>
       </div>
       <div>
-        个人介绍: <span>{{ $store.state.intro }}</span>
+        个人介绍: <span class="pintro">{{ $store.state.intro }}</span>
       </div>
-      <el-button type="primary" @click="check">修改个人信息</el-button>
+      <el-button type="primary" @click="check" class="bt"
+        >修改个人信息</el-button
+      >
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import request from "@/request";
 export default {
   data() {
     return {
@@ -51,9 +53,11 @@ export default {
     },
   },
   mounted() {
-    axios.get("http://localhost:5000/api/user/get_collection").then((res) => {
-      this.length = res.data.collect_books.length;
-    }); //拿收藏记录
+    request
+      .get("http://192.168.111.142:8080/api/user/get_collection")
+      .then((res) => {
+        this.length = res.data.collect_books.length;
+      }); //拿收藏记录
   },
 };
 </script>
@@ -62,25 +66,27 @@ export default {
 .all {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
-  height: 50vh;
-}
-.kind span {
-  margin-right: 10px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 #c {
-  margin-left: 100px;
+  margin-left: 80px;
 }
 #c div {
   margin-bottom: 20px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 17px;
 }
 #c span {
-  margin-left: 10px;
+  margin-left: 15px;
 }
 img {
   border-radius: 50%;
   border: black solid 1px;
   object-fit: cover;
+}
+.bt {
+  width: 200px;
 }
 .intro {
   margin-top: 20px;
@@ -98,5 +104,9 @@ img {
 .num span {
   padding-left: 20px;
   padding-right: 50px;
+}
+.pintro {
+  width: 400px;
+  display: inline-block;
 }
 </style>

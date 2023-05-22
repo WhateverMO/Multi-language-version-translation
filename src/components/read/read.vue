@@ -1,13 +1,16 @@
 <template>
   <div id="c">
-    <div id="c1">
-      <ul>
-        <li>{{ title }}</li>
-      </ul>
+    <div class="content">
+      <div id="c1">
+        <ul>
+          <li>{{ title }}</li>
+        </ul>
+      </div>
+      <div id="c2">
+        {{ content }}
+      </div>
     </div>
-    <div id="c2">
-      {{ content }}
-    </div>
+    <div class="zhan"></div>
     <div id="c3">
       <ul>
         <li class="change">目录</li>
@@ -118,7 +121,9 @@ export default {
     },
     collect() {
       axios
-        .post("http://localhost:5000/api/user/collect/" + this.$store.state.bookid)
+        .post(
+          "http://localhost:5000/api/user/collect/" + this.$store.state.bookid
+        )
         .then((res) => {
           alert(res.data.msg);
         });
@@ -134,6 +139,27 @@ export default {
 </script>
 
 <style scoped>
+#c {
+  background: url(../../assets/img/5.jpg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  width: 90vw;
+  margin: 0 auto;
+}
+.content {
+  width: 55vw;
+  margin: 50px auto;
+  border: 1px solid black;
+
+  padding: 40px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  letter-spacing: 5px;
+}
+.zhan {
+  height: 50px;
+}
 #c1 {
   display: flex;
   justify-content: center;
@@ -142,13 +168,8 @@ export default {
 }
 #c1 ul li {
   margin-bottom: 20px;
-  margin-left: 50px;
 }
-#c2 {
-  width: 800px;
-  margin-left: 20vw;
-  height: 80vh;
-}
+
 #c3 {
   position: fixed;
   top: 50vh;

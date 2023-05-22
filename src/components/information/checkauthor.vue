@@ -146,7 +146,8 @@ export default {
         author_describe: this.textarea,
         author_age: this.$refs.old.selected.label,
       };
-      const path = "http://localhost:5000/api/author/information/modification";
+      const path =
+        "http://192.168.111.142:8080/api/author/information/modification";
       axios.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {

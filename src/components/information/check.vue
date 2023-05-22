@@ -3,7 +3,7 @@
     <ul>
       <el-upload
         class="avatar-uploader"
-        action="https://jsonplaceholder.typicode.com/posts/"
+        action="/api/user/information/modification/update_avatar"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
@@ -12,6 +12,7 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
     </ul>
+
     <ul>
       <li>
         用户名：<el-input
@@ -52,7 +53,7 @@
       <li>
         个人介绍:<el-input
           type="textarea"
-          :rows="4"
+          :rows="3"
           placeholder="请输入介绍内容"
           v-model="textarea"
         >
@@ -65,7 +66,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   data() {
     return {
@@ -123,8 +124,20 @@ export default {
   },
 
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(res, files) {
+      this.imageUrl = URL.createObjectURL(files.raw);
+      console.log(res, files);
+      var formData = new FormData();
+      formData.append("file", files.raw, files.name);
+      console.log(formData.get("file"));
+      const path = "/api/user/information/modification/update_avatar";
+      request.post(path, formData).then((res) => {
+        alert(res.data.msg);
+        if (res.data.code == 200) {
+          console.log(123);
+          // this.$router.push("/readerinformation");
+        }
+      });
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
@@ -138,6 +151,7 @@ export default {
       }
       return isJPG && isLt2M;
     },
+
     checkinfo() {
       var data = {
         username: this.input,
@@ -146,8 +160,8 @@ export default {
         user_describe: this.textarea,
         user_age: this.$refs.old.selected.label,
       };
-      const path = "http://localhost:5000/api/user/information/modification";
-      axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/user/information/modification";
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$store.commit("name", res.data.username);
@@ -170,7 +184,6 @@ export default {
 }
 ul {
   margin-top: 50px;
-  height: 65vh;
   margin-left: 50px;
 }
 ul li {
@@ -182,23 +195,29 @@ ul li {
 .el-button {
   margin-left: 5vw;
 }
-
 .el-textarea {
   width: 250px;
 }
-
 .avatar-uploader {
-  border: 1px dashed #120f0f;
-  border-radius: 6px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  width: 278px;
+  height: 278px;
+  background-color: rgb(235, 252, 247);
+  border: 1px dashed #7a7b7b;
+}
+.avatar-uploader:hover {
+  border: 1px dashed #c93b28;
 }
 .avatar-uploader-icon {
-  font-size: 50px;
-  color: #b22a45;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
+  font-size: 48px;
+  width: 278px;
+  height: 278px;
+  line-height: 278px;
+  text-align: center;
+}
+.avatar {
+  width: 278px;
+  height: 278px;
+  display: block;
 }
 </style>

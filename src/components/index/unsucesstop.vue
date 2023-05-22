@@ -34,11 +34,16 @@
       </el-submenu>
       <el-menu-item index="0">rt-books</el-menu-item>
       <el-menu-item index="2">{{ $t("m.welcomtext") }}</el-menu-item>
+      <div class="search">
+        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-button type="primary" plain @click="search">搜索</el-button>
+      </div>
     </el-menu>
   </div>
 </template>
 
 <script>
+import request from "@/request";
 export default {
   name: "top",
   data() {
@@ -67,18 +72,39 @@ export default {
       this.lang = "cn";
       this.$i18n.locale = this.lang;
     },
+    search() {
+      request.get("/api/user/book/search/" + this.input).then((res) => {
+        setTimeout(() => {
+          this.$bus.$emit("introduce", res.data);
+          this.$bus.$emit("bookid", this.input);
+        }, 1000);
+        this.$router.push("/introbook");
+      }); //给首页发请求拿数据
+    },
   },
 };
 </script>
 
 <style scoped >
 .el-menu.el-menu--horizontal {
-  height: 10vh;
+  height: 8vh;
   display: flex;
   justify-content: space-between;
+  background-color: #f0f0ed;
 }
-.el-menu-item {
-  margin-left: 5%;
-  font-size: 120%;
+
+.el-menu--horizontal > .el-submenu .el-submenu__title {
+  color: black;
+}
+el-menu-item {
+  width: 20px;
+}
+.el-input {
+  width: 300px;
+  margin-top: 10px;
+}
+.el-button {
+  width: 100px;
+  margin: auto;
 }
 </style>

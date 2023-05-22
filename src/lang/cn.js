@@ -28,7 +28,7 @@ export const m = {
     Briefintroduction: '简介',
     Beautifulsentenceappreciation: '美句欣赏',
     Popularbooks: '热门图书',
-    Readersexperience: '读者心得',
+    Readersexperience: '读者分享',
     sentence: '"知识有两种：我们自己知道一个问题的答案，或我们知道在哪儿我们可以找到这个问题的答案"。– 塞缪尔·约翰逊',
     readcontent: '"读书心得读书是我们生活中必不可少的程序，书的世界是丰富多彩的，什么都有。读书让我们领悟了人世间的思想与认识：思想：在读书中，我们读的认真，就会感到自己仿佛身临其境，感觉自己就是书本里的人物，有自己的思想。认识：读书，可以让我们去看世界，了解国内外的时，认识许多有名的人物"。',
 

@@ -1,7 +1,7 @@
 <template>
   <div class="all">
     <div id="l">
-      <img src="@/assets/img/headimg.jpg" alt="" width="200px" height="200px" />
+      <img :src="$store.state.imge" alt="" width="200px" height="200px" />
       <div class="intro">
         <span>我的粉丝</span><span>我的作品</span><span>我的关注</span>
       </div>

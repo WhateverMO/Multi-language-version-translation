@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "top",
   data() {
@@ -48,8 +48,8 @@ export default {
       this.$router.push("/checkpasswordauthor");
     },
     back() {
-      const path = "http://localhost:5000/api/author/logout";
-      axios.delete(path).then((res) => {
+      const path = "/api/author/logout";
+      request.delete(path).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/");

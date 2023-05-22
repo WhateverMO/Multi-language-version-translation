@@ -95,10 +95,14 @@ img {
 }
 h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
 .el-button {
   width: 20vw;
   margin-left: 2vw;
+}
+.el-input {
+  margin-left: 10px;
 }
 .login {
   margin-left: 5vw;

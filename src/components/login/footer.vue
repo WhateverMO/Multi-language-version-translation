@@ -19,11 +19,13 @@ export default {
 
 <style>
 .footer {
-  height: 2vh;
-  margin-top: 8vh;
   text-align: center;
-  position: sticky;
+  height: 40px;
+  padding-top: 10px;
+  background-color: #f0f0ed;
+  position: fixed;
   bottom: 0;
+  width: 100vw;
 }
 .footer li {
   font-size: small;

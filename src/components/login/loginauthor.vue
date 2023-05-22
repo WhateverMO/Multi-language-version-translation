@@ -93,6 +93,7 @@ img {
 }
 h2 {
   text-align: center;
+  margin-bottom: 20px;
 }
 .el-button {
   width: 20vw;
@@ -105,5 +106,8 @@ h2 {
 .enroll:hover {
   cursor: pointer;
   color: red;
+}
+.el-input {
+  margin-left: 10px;
 }
 </style>
