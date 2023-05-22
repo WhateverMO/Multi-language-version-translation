@@ -47,6 +47,11 @@ def create_vocab(sentences, max_element=None):
         c_set = Counter(sentence)
         char_set.update(c_set)
 
+    if type(max_element) == float and max_element < 1 and max_element > 0:
+        max_element = len(char_set.keys())*max_element
+        max_element = int(max_element)
+        print('max_element:',max_element)
+
     if max_element is None:
         return default_list + list(char_set.keys())
     else:
@@ -54,6 +59,7 @@ def create_vocab(sentences, max_element=None):
         words_freq = char_set.most_common(max_element)
         # pair array to double array
         words, freq = zip(*words_freq)
+        print('cover rate:',sum(freq)/sum(char_set.values()))
         return default_list + list(words)
 
 def sentence_to_tensor(sentences, vocab):
@@ -72,7 +78,7 @@ def sentence_to_tensor(sentences, vocab):
 def tensor_to_sentence(tensor, mapping, insert_space=False):
     res = ''
     first_word = True
-    for id in tqdm(tensor,total=len(tensor)):
+    for id in tensor:
         word = mapping[int(id.item())]
 
         if insert_space and not first_word:
@@ -83,26 +89,26 @@ def tensor_to_sentence(tensor, mapping, insert_space=False):
 
     return res
 
-def load_vocab(isMain=False):
+def load_vocab(isMain=False,max_element = None):
     f = True
     while f:
         try:
-            vocab = np.load('./translation2019zh/vocab.npy',
+            vocab = np.load(f'./translation2019zh/vocab{max_element}.npy',
                             allow_pickle=True).item()
             f = False
         except FileNotFoundError:
             if isMain:
                 raise FileNotFoundError
-            main()
+            main(max_element)
     en_vocab = vocab['en']
     zh_vocab = vocab['zh']
     return en_vocab, zh_vocab
 
-def load_sentences(isMain=False):
+def load_sentences(isMain=False,max_element=None):
     f = True
     while f:
         try:
-            tensors = np.load('./translation2019zh/sentences.npy',
+            tensors = np.load(f'./translation2019zh/sentences{max_element}.npy',
                               allow_pickle=True).item()
             f = False
         except FileNotFoundError:
@@ -151,18 +157,19 @@ class TranslationDataset(Dataset):
         x = torch.from_numpy(x)
         y = np.concatenate(([SOS_ID], self.to_tensor[index], [EOS_ID]))
         y = torch.from_numpy(y)
-        return x, y
+        return x, y[:-1],y[1:]
 
 def get_dataloader(frm_tensor: np.ndarray,
                    to_tensor: np.ndarray,
                    batch_size=16):
 
     def collate_fn(batch):
-        x, y = zip(*batch)
+        x, y,y1 = zip(*batch)
         x_pad = pad_sequence(x, batch_first=True, padding_value=PAD_ID)
         y_pad = pad_sequence(y, batch_first=True, padding_value=PAD_ID)
+        y_1_pad = pad_sequence(y1, batch_first=True, padding_value=PAD_ID)
 
-        return x_pad, y_pad
+        return x_pad, y_pad,y_1_pad
 
     dataset = TranslationDataset(frm_tensor, to_tensor)
     dataloader = DataLoader(dataset,
@@ -172,9 +179,11 @@ def get_dataloader(frm_tensor: np.ndarray,
 
     return dataloader
 
-def main():
+def main(max_element = None):
     try:
+        print('loading sentences pkl')
         en_sens_train,zh_sens_train,en_sens_valid,zh_sens_valid = load_sentences_pkl(True)
+        print('loaded')
     except FileNotFoundError:
         print('process json')
         en_sens_train, zh_sens_train = read_file(
@@ -193,18 +202,22 @@ def main():
             pickle.dump(sentences,file)
         print('written')
     try:
-        en_vocab,zh_vocab = load_vocab(True)
+        print('loading vocab')
+        en_vocab,zh_vocab = load_vocab(True,max_element)
+        print('loaded')
     except FileNotFoundError:
         print('process vocab')
-        en_vocab = create_vocab(en_sens_train)
-        zh_vocab = create_vocab(zh_sens_train)
+        en_vocab = create_vocab(en_sens_train,max_element)
+        zh_vocab = create_vocab(zh_sens_train,max_element)
         print('processed')
         vocab = {'en': en_vocab, 'zh': zh_vocab}
         print('writing')
-        np.save('./translation2019zh/vocab.npy', vocab)
+        np.save(f'./translation2019zh/vocab{max_element}.npy', vocab)
         print('written')
     try:
-        en_tensors_train, zh_tensors_train, en_tensors_valid, zh_tensors_valid = load_sentences(True)
+        print('loading sentences')
+        en_tensors_train, zh_tensors_train, en_tensors_valid, zh_tensors_valid = load_sentences(True,max_element)
+        print('loaded')
     except FileNotFoundError:
         print('process tensor')
         en_tensors_train = sentence_to_tensor(en_sens_train, en_vocab)
@@ -219,7 +232,7 @@ def main():
             'zh_valid': zh_tensors_valid
         }
         print('writing')
-        np.save('./translation2019zh/sentences.npy', tensors)
+        np.save(f'./translation2019zh/sentences{max_element}.npy', tensors)
         print('written')
 
 if __name__ == '__main__':
