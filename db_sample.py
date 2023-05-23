@@ -2,26 +2,27 @@ from Database import *
 
 hot_book_list = []
 
-u_id = add_user(users(user_name="秋海棠", user_describe="我是秋海棠", password="716300"))
+u_id = add_user(users(user_name="秋海棠", user_describe="我是秋海棠", password="716300",
+                      picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 
 au_id1 = add_author(
-    authores(author_name="刘慈欣", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="刘慈欣", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id2 = add_author(
-    authores(author_name="东野圭吾", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="东野圭吾", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id3 = add_author(
-    authores(author_name="余华", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="余华", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id4 = add_author(
-    authores(author_name="J.K.罗琳", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="J.K.罗琳", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id5 = add_author(
-    authores(author_name="曹雪芹", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="曹雪芹", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id6 = add_author(
-    authores(author_name="卡勒德·胡赛尼", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="卡勒德·胡赛尼", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id7 = add_author(authores(author_name="加西亚·马尔克斯", password="123456",
-                             picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+                             picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id8 = add_author(
-    authores(author_name="石悦", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="石悦", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 au_id9 = add_author(
-    authores(author_name="圣埃克苏佩里", password="123456", picture='http://localhost:8080/static/avatar_file/b2.jpg'))
+    authores(author_name="圣埃克苏佩里", password="123456", picture='http://localhost:5000/static/avatar_file/b2.jpg'))
 
 b_id1 = add_book(booklib(author_id=au_id1, name="三体", lang_id=1, bc_id=4,
                          desc='这是一部描述地球人类文明和三体文明的恩怨纠葛的硬科幻小说'))

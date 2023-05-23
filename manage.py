@@ -11,4 +11,4 @@ if __name__ == '__main__':
     # server.serve_forever()
 
     # 测试端口
-    app.run(host=host, port=8080)
+    app.run(host=host, port=5000)

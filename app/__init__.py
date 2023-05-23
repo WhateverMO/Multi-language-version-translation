@@ -44,7 +44,7 @@ def create_app(config_name):
             reco_book_dir = basedir + '/app/static/book_file/'
             reco_book_ids = sorted(os.listdir(reco_book_dir))
             hot_book_ids = select_hot_book()[0]
-            my_host = 'http://' + host + ':8080'
+            my_host = 'http://' + host + ':5000'
             lun_bos = my_host + "/static/lun_bo_file/"
             lun_path = basedir + '/app/static/lun_bo_file/'
             luns = []

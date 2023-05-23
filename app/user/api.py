@@ -36,15 +36,18 @@ def register():
     if password != password2:
         return jsonify(msg="两次密码不一致", code=4001)
     # 这里是默认头像
-    my_host = "http://" + host + ":8080"
+    my_host = "http://" + host + ":5000"
     default_avatar_url = my_host + "/static/avatar_file/b2.jpg"
     user_id = add_user(users(user_name=username, password=password, picture=default_avatar_url))
     # 保存登陆状态到session中
     session["username"] = username
     session["user_id"] = user_id
     session["picture"] = default_avatar_url
+    # 我在这里作了更改，将数据保存为一个对象
+    resp = make_response(jsonify(msg="注册成功", user_id=user_id, picture=default_avatar_url, code=200))
+    resp.set_cookie('session', session)
     # 返回结果
-    return jsonify(msg="注册成功", user_id=user_id, picture=default_avatar_url, code=200)
+    return resp
 
 
 # 用户登录接口
@@ -63,6 +66,7 @@ def login():
             session["user_id"] = user_id
             username = select_user(user_id).get("user_name")
             session["username"] = username
+
             print(session)
             return jsonify(msg="登陆成功", code=200)
         else:
@@ -197,7 +201,7 @@ def update_user_avatar():
             return jsonify(msg="未上传图片", code=4000)
         try:
             image_file.save(file_path)
-            my_host = "http://" + host + ":8080"
+            my_host = "http://" + host + ":5000"
             avatar_url = my_host + "/static/avatar_file/" + filename
         except Exception as e:
             print(e)
