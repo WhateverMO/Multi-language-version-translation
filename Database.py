@@ -566,11 +566,11 @@ def get_info_lang(id):
     return ret.lang_name
 
 
-def add_barrages(user):
+def add_barrages(user_barrage):
     with UsingAlchemy(log_label='添加用户弹幕') as sql:
         # sql.session
         now = str(datetime.datetime.utcnow())
-
+        sql.session.add(user)
 
 if __name__ == '__main__':
     # 下方代码快只能第一次执行，第二次就会出错，您也不会用到，这是未来管理员系统相关内容，第一次必须执行此代码，否则会有依赖错误

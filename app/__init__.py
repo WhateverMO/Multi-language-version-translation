@@ -46,7 +46,7 @@ def create_app(config_name):
             hot_book_ids = select_hot_book()[0]
             my_host = 'http://' + host + ':8080'
             lun_bos = my_host + "/static/lun_bo_file/"
-            lun_path = 'D:/python/rt-books/app/static/lun_bo_file/'
+            lun_path = '../static/lun_bo_file/'
             luns = []
             files = sorted(os.listdir(lun_path))
             for file in files:
