@@ -1,3 +1,4 @@
+import pickle
 import random
 from flask import request, jsonify, session, g, make_response
 from . import user
@@ -45,7 +46,8 @@ def register():
     session["picture"] = default_avatar_url
     # 我在这里作了更改，将数据保存为一个对象
     resp = make_response(jsonify(msg="注册成功", user_id=user_id, picture=default_avatar_url, code=200))
-    resp.set_cookie('session', session)
+    session_bytes = pickle.dumps(session)
+    resp.set_cookie('session', session_bytes)
     # 返回结果
     return resp
 
