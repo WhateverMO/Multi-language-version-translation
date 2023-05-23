@@ -102,7 +102,7 @@ class user_barrage(Base):
     __tablename__ = 'user_barrage'
     user_id = Column(Integer, ForeignKey(users.user_id), primary_key=True)
     barrage = Column(String(1024))
-    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow())
+    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow(), primary_key=True)
 
 
 # class user_books_barrage(Base):

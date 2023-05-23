@@ -4,7 +4,7 @@ from Config import config_map
 from flask_cors import *
 from Database import *
 
-host = '192.168.154.142'  # 测试端口
+host = '192.168.67.142'  # 测试端口
 # host = 'localhost'  # 本地端口
 
 

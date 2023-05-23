@@ -566,9 +566,10 @@ def get_info_lang(id):
     return ret.lang_name
 
 
-def add_barrages(user_id):
-    with UsingAlchemy(log_label='通过id查询用户弹幕') as sql:
-        ret = sql.session.query(user_barrage).filter(user_barrage.user_id == user_id).first()
+def add_barrages(user):
+    with UsingAlchemy(log_label='添加用户弹幕') as sql:
+        # sql.session
+        now = str(datetime.datetime.utcnow())
 
 
 if __name__ == '__main__':
