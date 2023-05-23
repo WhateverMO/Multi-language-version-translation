@@ -1,11 +1,21 @@
 [[source]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pip_conf_index_global"
+name = "pypi"
 
 [packages]
+flask = "==1.1.4"
+redis = "*"
+flask-cors = "*"
+pymysql = "*"
+sqlalchemy = "*"
+flask-script = "*"
+flask-migrate = "*"
+markupsafe = "==2.0.1"
+requests = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.11"
+python_full_version = "3.11.3"
