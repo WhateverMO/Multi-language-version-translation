@@ -105,9 +105,13 @@ class user_barrage(Base):
     create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow(), primary_key=True)
 
 
-# class user_books_barrage(Base):
-#     __talename__ = 'user_books_barrage'
-#     user_id = Column()
+class user_books_barrage(Base):
+    __tablename__ = 'user_books_barrage'
+    user_id = Column(Integer, ForeignKey(users.user_id), primary_key=True)
+    book_id = Column(Integer, ForeignKey(booklib.b_id), primary_key=True)
+    barrage = Column(String(1024))
+    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow(), primary_key=True)
+
 
 if __name__ == '__main__':
     print("清除数据库并新建")

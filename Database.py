@@ -244,6 +244,10 @@ def add_book(book):
         rootbook = rootbooklib(root_b_id=root_book_id, orgin_b_id=b_id, info=list())
         rootbook.add2redis()
         sql.session.add(book)
+        if not os.path.exists(bookfile_dir+str(b_id)):
+            os.mkdir(bookfile_dir+str(b_id))
+            with open(bookfile_dir+str(b_id)+'/.gitkeep', 'w') as fp:
+                pass
     return b_id
 
 
@@ -573,6 +577,31 @@ def add_barrages(user_barrage):
         sql.session.add(user_barrage)
 
 
+def select_barrages():
+    with UsingAlchemy(log_label='获取主页弹幕信息') as sql:
+        ret = sql.session.query(user_barrage).all()
+        res = list()
+        for i in ret:
+            user_name = select_user(i.user_id).get('user_name')
+            res.append({'user_id': i.user_id, 'user_name': user_name, 'barrage': i.barrage, 'time': i.create_time})
+    return res
+
+
+def add_user_book_barrage(user_book_barrage):
+    with UsingAlchemy(log_label='添加用户弹幕') as sql:
+        now = str(datetime.datetime.utcnow())
+        user_book_barrage.create_time = now
+        sql.session.add(user_book_barrage)
+
+
+def select_barrage_by_b_id(book_id):
+    with UsingAlchemy(log_label='获取该书籍评论') as sql:
+        ret = sql.session.query(user_books_barrage).filter(user_books_barrage.book_id == book_id).all()
+        res = list()
+        for i in ret:
+            user_name = select_user(i.user_id).get('user_name')
+            res.append({'user_id': i.user_id, 'user_name': user_name, 'barrage': i.barrage, 'time': i.create_time})
+    return res
 
 
 if __name__ == '__main__':
@@ -640,4 +669,5 @@ __all__ = ['users', 'authores', 'booklib',
            'user_collect_a_book', 'user_delate_a_collected',
            'user_create_a_collection_lib', 'user_delate_a_collection_lib',
            'get_user_collection', 'user_get_all_collection_lib',
-           'get_info_class', 'get_info_lang']
+           'get_info_class', 'get_info_lang', 'add_barrages', 'select_barrages', 'add_user_book_barrage',
+           'select_barrage_by_b_id']

@@ -8,6 +8,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from Database import *
 from app import host
+from db_struct import *
 
 
 @user.after_request
@@ -68,8 +69,6 @@ def login():
             session["user_id"] = user_id
             username = select_user(user_id).get("user_name")
             session["username"] = username
-
-            print(session)
             return jsonify(msg="登陆成功", code=200)
         else:
             return jsonify(msg='异常错误', code=4003)
@@ -88,6 +87,7 @@ def check_session():
     user_phone_number = session.get("user_phone_number")
     user_email = session.get("user_email")
     user_birthday = session.get("user_birthday")
+
     if user_id is not None:
         return jsonify(user_id=user_id, username=username, user_age=user_age, user_area=user_area,
                        user_gender=user_gender, user_describe=user_describe, user_avatar=user_avatar,
@@ -223,22 +223,33 @@ def book_search(book_name):
         return jsonify(msg='找到有关书籍', books=res, code=200)
 
 
-# 书籍简介
-@user.route('/read_book/introduce/<int:book_id>', methods=['GET'])
+# 书籍简介页面（含用户评论）
+@user.route('/read_book/introduce/<int:book_id>', methods=['GET', 'POST'])
+@user_login_required
 def read_book_index(book_id):
-    data = select_book(book_id)
-    book_name = data.get("name")
-    author_name = select_author(data.get("author_id")).get("author_name")
-    cover_path = data.get("cover_path")
-    book_describe = data.get("desc")
-    # 这里返回所有章节的章节名
-    content_list = select_contents_by_a_book(book_id)
-    # 例如content_list[0]就对应该书的第一章的章节名
-    if content_list == -1:
-        return jsonify(msg='该书无章节或该书不存在', code=4000)
-    else:
-        return jsonify(book_name=book_name, author_name=author_name,
-                       book_describe=book_describe, cover_path=cover_path, content_list=content_list, code=200)
+    if request.method == 'GET':
+        data = select_book(book_id)
+        book_name = data.get("name")
+        author_name = select_author(data.get("author_id")).get("author_name")
+        cover_path = data.get("cover_path")
+        book_describe = data.get("desc")
+        # 书籍评论
+        barrage = select_barrage_by_b_id(book_id)
+        # 这里返回所有章节的章节名
+        content_list = select_contents_by_a_book(book_id)
+        # 例如content_list[0]就对应该书的第一章的章节名
+        if content_list == -1:
+            return jsonify(msg='该书无章节或该书不存在', code=4000)
+        else:
+            return jsonify(book_name=book_name, author_name=author_name,
+                           book_describe=book_describe, cover_path=cover_path, content_list=content_list,
+                           barrages=barrage, code=200)
+    # 用户发送评论
+    elif request.method == 'POST':
+        user_id = g.user_id
+        barrage = request.form.get('barrage')
+        add_user_book_barrage(user_books_barrage(user_id=user_id, book_id=book_id, barrage=barrage))
+        return jsonify(msg='评论发送成功！', code=200)
 
 
 # 开始阅读
@@ -364,9 +375,28 @@ def get_a_collection(libname):
     return jsonify(collection_book_list=collection_book_list, code=200)
 
 
+# 用户在主页发送弹幕
 @user.route('/push_barrage', methods=['POST'])
 @user_login_required
 def push_barrage():
-    user_id = g.user_id
-    barrage = request.form.get("barrage")
-    pass
+    try:
+        user_id = g.user_id
+        barrage = request.form.get("barrage")
+        add_barrages(user_barrage(user_id=user_id, barrage=barrage))
+        return jsonify(msg='发送成功!', code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg='发送失败', code=4000)
+
+
+# 主页获取弹幕
+@user.route('/get_barrage', methods=['GET'])
+@user_login_required
+def get_barrage():
+    try:
+        user_id = g.user_id
+        barrage = select_barrages()
+        return jsonify(msg='获取主页弹幕成功!', barrages=barrage, code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg='获取弹幕失败！', code=4000)
