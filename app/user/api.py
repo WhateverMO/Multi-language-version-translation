@@ -41,6 +41,8 @@ def register():
     my_host = "http://" + host + ":5000"
     default_avatar_url = my_host + "/static/avatar_file/b2.jpg"
     user_id = add_user(users(user_name=username, password=password, picture=default_avatar_url))
+    # 创建用户的默认收藏夹
+    user_create_a_collection_lib(user_id, '默认收藏夹')
     # 保存登陆状态到session中
     session["username"] = username
     session["user_id"] = user_id
@@ -310,11 +312,10 @@ def create_collection():
 
 
 # 用户删除收藏夹
-@user.route('/dele_collection', methods=['POST'])
+@user.route('/dele_collection/<string:libname>', methods=['DELETE'])
 @user_login_required
-def dele_collection():
+def dele_collection(libname):
     user_id = g.user_id
-    libname = request.form.get("libname")
     try:
         user_delate_a_collection_lib(user_id, libname)
     except Exception as e:
@@ -326,27 +327,19 @@ def dele_collection():
 # 收藏书籍
 @user.route('/collect/<int:book_id>/<string:libname>', methods=['POST'])
 @user_login_required
-def collect(book_id):
+def collect(book_id, libname):
     user_id = g.user_id
-    libname = request.form.get("libname")
     if user_collect_a_book(user_id, libname, book_id):
         return jsonify(msg='收藏成功', code=200)
     else:
         return jsonify(msg='已存在于收藏夹', code=4000)
 
 
-# # 用户选择哪个收藏夹的页面
-# @user.route('/collect/<int:book_id>', methods=['POST', 'GET'])
-# @user_login_required
-# def
-
-
 # 取消收藏
-@user.route('/del_collect/<int:book_id>', methods=['POST'])
+@user.route('/del_collect/<int:book_id>/<string:libname>', methods=['DELETE'])
 @user_login_required
-def del_collect(book_id):
+def del_collect(book_id, libname):
     user_id = g.user_id
-    libname = "默认收藏夹"
     if user_delate_a_collected(user_id, libname, book_id):
         return jsonify(msg='已取消收藏', code=200)
     else:
@@ -362,17 +355,24 @@ def get_collections():
     return jsonify(msg='获取所有收藏夹成功', collections=libs, code=200)
 
 
-# 用户点开某个收藏夹的界面
-@user.route('/get_collection/<int:libname>', methods=['GET'])
+# 用户点开某个收藏夹
+@user.route('/get_collection/<string:libname>', methods=['GET'])
 @user_login_required
 def get_a_collection(libname):
     user_id = g.user_id
     try:
         collection_book_list = get_user_collection(user_id, libname)
+        col_books = []
+        for id in collection_book_list:
+            data = select_book(id)
+            picture = data.get('cover_path')
+            book_name = data.get('name')
+            desc = data.get('desc')
+            col_books.append({'book_id': id, 'book_name': book_name, 'picture': picture, 'desc': desc})
     except Exception as e:
         print(e)
         return jsonify(msg='获取失败，请重试', code=4000)
-    return jsonify(collection_book_list=collection_book_list, code=200)
+    return jsonify(msg="获取成功", collection_book_list=col_books, code=200)
 
 
 # 用户在主页发送弹幕
@@ -394,7 +394,6 @@ def push_barrage():
 @user_login_required
 def get_barrage():
     try:
-        user_id = g.user_id
         barrage = select_barrages()
         return jsonify(msg='获取主页弹幕成功!', barrages=barrage, code=200)
     except Exception as e:
