@@ -244,9 +244,9 @@ def add_book(book):
         rootbook = rootbooklib(root_b_id=root_book_id, orgin_b_id=b_id, info=list())
         rootbook.add2redis()
         sql.session.add(book)
-        if not os.path.exists(bookfile_dir+str(b_id)):
-            os.mkdir(bookfile_dir+str(b_id))
-            with open(bookfile_dir+str(b_id)+'/.gitkeep', 'w') as fp:
+        if not os.path.exists(bookfile_dir + str(b_id)):
+            os.mkdir(bookfile_dir + str(b_id))
+            with open(bookfile_dir + str(b_id) + '/.gitkeep', 'w') as fp:
                 pass
     return b_id
 
@@ -579,7 +579,7 @@ def add_barrages(user_barrage):
 
 def select_barrages():
     with UsingAlchemy(log_label='获取主页弹幕信息') as sql:
-        ret = sql.session.query(user_barrage).all()
+        ret = sql.session.query(user_barrage).order_by(user_barrage.create_time.desc()).all()
         res = list()
         for i in ret:
             user_name = select_user(i.user_id).get('user_name')
@@ -604,56 +604,6 @@ def select_barrage_by_b_id(book_id):
     return res
 
 
-if __name__ == '__main__':
-    # 下方代码快只能第一次执行，第二次就会出错，您也不会用到，这是未来管理员系统相关内容，第一次必须执行此代码，否则会有依赖错误
-    add_book_class(bookclass(bookclass_id=1, class_name='小说'))
-    add_book_class(bookclass(bookclass_id=2, class_name='传记'))
-    add_book_class(bookclass(bookclass_id=3, class_name='历史'))
-    add_book_class(bookclass(bookclass_id=4, class_name='科幻'))
-    add_book_class(bookclass(bookclass_id=5, class_name='奇幻'))
-    add_book_class(bookclass(bookclass_id=6, class_name='悬疑'))
-    add_book_class(bookclass(bookclass_id=7, class_name='推理'))
-    add_book_class(bookclass(bookclass_id=8, class_name='恐怖'))
-    add_book_class(bookclass(bookclass_id=9, class_name='浪漫'))
-    add_book_class(bookclass(bookclass_id=10, class_name='青春'))
-    add_book_class(bookclass(bookclass_id=11, class_name='散文'))
-    add_book_class(bookclass(bookclass_id=12, class_name='哲学'))
-    add_book_class(bookclass(bookclass_id=13, class_name='心理学'))
-    add_book_class(bookclass(bookclass_id=14, class_name='自助/励志'))
-    add_book_class(bookclass(bookclass_id=15, class_name='科学'))
-    add_book_class(bookclass(bookclass_id=16, class_name='数学'))
-    add_book_class(bookclass(bookclass_id=17, class_name='艺术'))
-    add_book_class(bookclass(bookclass_id=18, class_name='音乐'))
-    add_book_class(bookclass(bookclass_id=19, class_name='体育'))
-    add_book_class(bookclass(bookclass_id=20, class_name='旅行'))
-    add_book_class(bookclass(bookclass_id=21, class_name='食谱/烹饪'))
-    add_book_class(bookclass(bookclass_id=22, class_name='健康/养生'))
-    add_book_class(bookclass(bookclass_id=23, class_name='宗教'))
-    add_book_class(bookclass(bookclass_id=24, class_name='政治'))
-    add_book_class(bookclass(bookclass_id=25, class_name='经济'))
-    add_book_class(bookclass(bookclass_id=26, class_name='法律'))
-    add_book_class(bookclass(bookclass_id=27, class_name='教育'))
-    add_book_class(bookclass(bookclass_id=28, class_name='科技'))
-    add_book_class(bookclass(bookclass_id=29, class_name='计算机'))
-    add_book_class(bookclass(bookclass_id=30, class_name='儿童/少儿'))
-    add_language(languages(lang_id=1, lang_name='汉语'))
-    add_language(languages(lang_id=2, lang_name='英语'))
-    add_language(languages(lang_id=3, lang_name='西班牙语'))
-    add_language(languages(lang_id=4, lang_name='法语'))
-    add_language(languages(lang_id=5, lang_name='德语'))
-    add_language(languages(lang_id=6, lang_name='意大利语'))
-    add_language(languages(lang_id=7, lang_name='俄语'))
-    add_language(languages(lang_id=8, lang_name='阿拉伯语'))
-    add_language(languages(lang_id=9, lang_name='日语'))
-    add_language(languages(lang_id=10, lang_name='韩语'))
-    add_language(languages(lang_id=11, lang_name='葡萄牙语'))
-    add_language(languages(lang_id=12, lang_name='荷兰语'))
-    add_language(languages(lang_id=13, lang_name='瑞典语'))
-    add_language(languages(lang_id=14, lang_name='丹麦语'))
-    add_language(languages(lang_id=15, lang_name='挪威语'))
-    add_language(languages(lang_id=16, lang_name='土耳其语'))
-    add_language(languages(lang_id=17, lang_name='波兰语'))
-
 __all__ = ['users', 'authores', 'booklib',
            'user_id_pool_size', 'user_id_pool_lock_size', 'author_id_pool_size',
            'author_id_pool_lock_size', 'root_b_id_pool_size', 'b_id_pool_size',
@@ -670,4 +620,4 @@ __all__ = ['users', 'authores', 'booklib',
            'user_create_a_collection_lib', 'user_delate_a_collection_lib',
            'get_user_collection', 'user_get_all_collection_lib',
            'get_info_class', 'get_info_lang', 'add_barrages', 'select_barrages', 'add_user_book_barrage',
-           'select_barrage_by_b_id']
+           'select_barrage_by_b_id', 'add_book_class', 'add_language']
