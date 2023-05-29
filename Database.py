@@ -1,5 +1,8 @@
 import json
 import os
+import time
+
+import pytz as pytz
 
 from db_struct import *
 
@@ -108,7 +111,8 @@ def add_user(user):
     with UsingAlchemy(log_label='添加用户') as sql:
         user_id = del_a_user_id_from_pool(sql)
         user.user_id = user_id
-        user.activate_time = datetime.datetime.utcnow()
+        user.activate_time = datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(
+            pytz.timezone("Asia/Shanghai"))
         sql.session.add(user)
     return user_id
 
@@ -127,7 +131,10 @@ def del_user(user_id):
 def select_user(user_id):
     with UsingAlchemy(log_label='获取用户信息') as sql:
         ret = sql.session.query(users).filter(users.user_id == user_id).first()
-        sql.session.query(users).filter(users.user_id == user_id).update({"activate_time": datetime.datetime.utcnow()})
+        sql.session.query(users).filter(users.user_id == user_id).update({
+            "activate_time": datetime.datetime.utcnow().replace(
+                tzinfo=pytz.utc).astimezone(
+                pytz.timezone("Asia/Shanghai"))})
     try:
         return {'user_id': ret.user_id, 'user_name': ret.user_name, 'age': ret.age,
                 "picture": ret.picture, "gender": ret.gender, "phone_number": ret.phone_number,
@@ -142,7 +149,10 @@ def select_user(user_id):
 def login_user(user_id, passwd):
     with UsingAlchemy(log_label='用户登录') as sql:
         ret = sql.session.query(users).filter(users.user_id == user_id).first()
-        sql.session.query(users).filter(users.user_id == user_id).update({"activate_time": datetime.datetime.utcnow()})
+        sql.session.query(users).filter(users.user_id == user_id).update({
+            "activate_time": datetime.datetime.utcnow().replace(
+                tzinfo=pytz.utc).astimezone(
+                pytz.timezone("Asia/Shanghai"))})
     try:
         return passwd == ret.password
     except AttributeError:
@@ -485,7 +495,7 @@ def select_hot_book():
 
 def add_user_read_history(user_id, b_id, c_no, t):
     print('添加用户' + str(user_id) + '阅读书籍' + str(b_id) + '记录')
-    now = str(datetime.datetime.utcnow())
+    now = str(str(datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))))
     record = [b_id, c_no, t]
     r0.rpush(user_lib_text + str(user_id) + ':history', json.dumps(record))
 
@@ -572,7 +582,7 @@ def get_info_lang(id):
 
 def add_barrages(user_barrage):
     with UsingAlchemy(log_label='添加用户弹幕') as sql:
-        now = str(datetime.datetime.utcnow())
+        now = str(str(datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))))
         user_barrage.create_time = now
         sql.session.add(user_barrage)
 
@@ -581,7 +591,7 @@ def select_barrages():
     with UsingAlchemy(log_label='获取主页弹幕信息') as sql:
         ret = sql.session.query(user_barrage).order_by(user_barrage.create_time.desc()).all()
         res = list()
-        for i in ret:
+        for i in ret[:10]:
             user_name = select_user(i.user_id).get('user_name')
             res.append({'user_id': i.user_id, 'user_name': user_name, 'barrage': i.barrage, 'time': i.create_time})
     return res
@@ -589,7 +599,7 @@ def select_barrages():
 
 def add_user_book_barrage(user_book_barrage):
     with UsingAlchemy(log_label='添加用户弹幕') as sql:
-        now = str(datetime.datetime.utcnow())
+        now = str(datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai")))
         user_book_barrage.create_time = now
         sql.session.add(user_book_barrage)
 

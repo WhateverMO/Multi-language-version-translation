@@ -394,7 +394,7 @@ def push_barrage():
 def get_barrage():
     try:
         barrage = select_barrages()
-        return jsonify(msg='获取主页弹幕成功!', barrages=barrage[:10], code=200)
+        return jsonify(msg='获取主页弹幕成功!', barrages=barrage, code=200)
     except Exception as e:
         print(e)
         return jsonify(msg='获取弹幕失败！', code=4000)

@@ -1,6 +1,8 @@
 import datetime
 import json
 
+import pytz
+
 from connection import *
 
 book_lib_text = "booklib:"
@@ -95,14 +97,17 @@ class booklib(Base):
     name = Column(String(54), nullable=False)
     desc = Column(String(1024), default=None)
     cover_path = Column(String(64))
-    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow())
+    create_time = Column(DATETIME, nullable=False, default=str(
+        datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))))
 
 
 class user_barrage(Base):
     __tablename__ = 'user_barrage'
     user_id = Column(Integer, ForeignKey(users.user_id), primary_key=True)
     barrage = Column(String(1024))
-    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow(), primary_key=True)
+    create_time = Column(DATETIME, nullable=False, default=str(
+        datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))),
+                         primary_key=True)
 
 
 class user_books_barrage(Base):
@@ -110,7 +115,9 @@ class user_books_barrage(Base):
     user_id = Column(Integer, ForeignKey(users.user_id), primary_key=True)
     book_id = Column(Integer, ForeignKey(booklib.b_id), primary_key=True)
     barrage = Column(String(1024))
-    create_time = Column(DATETIME, nullable=False, default=datetime.datetime.utcnow(), primary_key=True)
+    create_time = Column(DATETIME, nullable=False, default=str(
+        datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))),
+                         primary_key=True)
 
 
 if __name__ == '__main__':
