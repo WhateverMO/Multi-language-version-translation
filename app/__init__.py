@@ -4,8 +4,8 @@ from Config import config_map
 from flask_cors import *
 from Database import *
 
-# host = '192.168.67.142'  # 测试端口
-host = 'localhost'  # 本地端口
+# myhost = '192.168.67.142'  # 测试端口
+myhost = 'localhost'  # 本地端口
 
 
 def create_app(config_name):
@@ -44,7 +44,7 @@ def create_app(config_name):
             reco_book_dir = basedir + '/app/static/book_file/'
             reco_book_ids = sorted(os.listdir(reco_book_dir))
             hot_book_ids = select_hot_book()[0]
-            my_host = 'http://' + host + ':5000'
+            my_host = 'http://' + myhost + ':5000'
             lun_bos = my_host + "/static/lun_bo_file/"
             lun_path = basedir + '/app/static/lun_bo_file/'
             luns = []

@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from Database import *
-from app import host
+from app import myhost
 from db_struct import *
 
 
@@ -38,7 +38,7 @@ def register():
     if password != password2:
         return jsonify(msg="两次密码不一致", code=4001)
     # 这里是默认头像
-    my_host = "http://" + host + ":5000"
+    my_host = "http://" + myhost + ":5000"
     default_avatar_url = my_host + "/static/avatar_file/b2.jpg"
     user_id = add_user(users(user_name=username, password=password, picture=default_avatar_url))
     # 创建用户的默认收藏夹
@@ -205,7 +205,7 @@ def update_user_avatar():
             return jsonify(msg="未上传图片", code=4000)
         try:
             image_file.save(file_path)
-            my_host = "http://" + host + ":5000"
+            my_host = "http://" + myhost + ":5000"
             avatar_url = my_host + "/static/avatar_file/" + filename
         except Exception as e:
             print(e)

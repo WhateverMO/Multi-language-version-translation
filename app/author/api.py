@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from Database import *
-from app import host
+from app import myhost
 
 
 @author.after_request
@@ -36,7 +36,7 @@ def author_register():
 
         if password != password2:
             return jsonify(msg="两次密码不一致", code=4001)
-        my_host = "http://" + host + ":5000"
+        my_host = "http://" + myhost + ":5000"
         avatar = my_host + "/static/avatar_file/b2.jpg"
         author_id = add_author(authores(author_name=author_name, password=password, picture=avatar))
         # 保存登陆状态到session中
@@ -214,7 +214,7 @@ def update_user_avatar():
             return jsonify(msg="未上传图片", code=4000)
         try:
             image_file.save(file_path)
-            my_host = "http://" + host + ":5000"
+            my_host = "http://" + myhost + ":5000"
             avatar_url = my_host + "/static/avatar_file/" + filename
         except Exception as e:
             print(e)
@@ -235,7 +235,7 @@ def author_add_books_index():
             lang_id = request.form.get("lang_id")
             bc_id = request.form.get("bc_id")
             book_desc = request.form.get("book_desc")
-            my_host = "http://" + host + ":5000"
+            my_host = "http://" + myhost + ":5000"
             picture = my_host + "/static/cover_file/b1.jpg"
             book_id = add_book(
                 booklib(author_id=author_id, name=name, lang_id=lang_id, bc_id=bc_id, desc=book_desc,
@@ -315,7 +315,7 @@ def add_book_picture(book_id):
         return jsonify(msg="未上传图片", code=4000)
     try:
         cover_file.save(file_path)
-        my_host = "http://" + host + ":5000"
+        my_host = "http://" + myhost + ":5000"
         cover_url = my_host + "/static/cover_file/" + filename
     except Exception as e:
         print(e)
