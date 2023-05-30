@@ -18,6 +18,9 @@ torch = "*"
 torchvision = "*"
 torchaudio = "*"
 jieba = "*"
+transformers = "*"
+sentencepiece = "*"
+sacremoses = "*"
 
 [dev-packages]
 
