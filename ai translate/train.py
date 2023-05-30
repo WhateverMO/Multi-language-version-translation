@@ -154,16 +154,18 @@ def main():
             loss_sum += loss.item()
             toc = time.time()
             interval = toc - tic
-            minutes = int(interval // 60)
+            day = int(interval // 60 // 60 // 24)
+            hour = int((interval // 60 // 60)%24)
+            minutes = int((interval // 60)%60)
             seconds = int(interval % 60)
             if cnter % print_interval == 0:
-                print(f'{cnter:08d} {minutes:02d}:{seconds:02d}'
+                print(f'{cnter*batch_size:08d} {day:02d} {hour:02d} {minutes:02d}:{seconds:02d}'
                       f' loss: {loss.item()}')
                 if cnter % (print_interval*50) == 0:
                     torch.save(model.state_dict(), f'model{epoch}_{cnter}.pth')
             cnter += 1
 
-        print(f'Epoch {epoch}. loss: {loss_sum / dataset_len}')
+        print(f'Epoch {epoch}. loss: {loss_sum / dataset_len * batch_size}')
         valid(model, device, en_valid, zh_valid, en_vocab, zh_vocab)
 
         # if valid_period
