@@ -398,3 +398,14 @@ def get_barrage():
     except Exception as e:
         print(e)
         return jsonify(msg='获取弹幕失败！', code=4000)
+
+
+@user.route('/get_user_collect_count', methods=['GET'])
+@user_login_required
+def get_user_collects():
+    user_id = g.user_id
+    libs = user_get_all_collection_lib(user_id)
+    count = 0
+    for lib in libs:
+        count += len(get_user_collection(user_id, lib))
+    return jsonify(count=count, code=200)
