@@ -7,6 +7,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from Database import *
 from app import myhost
+from youdao_api import *
 
 
 @author.after_request
@@ -465,3 +466,17 @@ def get_all_book():
         book = [b_id, book_name, author_name, book_desc, picture]
         books.append(book)
     return jsonify(books=books, code=200)
+
+
+# AI辅助翻译
+@author.route('/ai_translate/<int:lang_id>', methods=['POST'])
+@author_login_required
+def ai_translate(lang_id):
+    lang = get_info_lang(lang_id)
+    text = request.form.get('text')
+    try:
+        trans_text = translate(text, LANG[0], LANG[lang2index_dic[lang]]).translated_text[0]
+        return jsonify(msg='翻译成功', trans_text=trans_text, code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg="翻译发生异常，请重试!", code=4000)

@@ -10,21 +10,37 @@ APP_SECRET = 'Lecp90iqJtQTlJpFFWsuWvoIYPvkhLxq'
 
 LANG = ['auto', 'zh-CHS', 'zh-CHT', 'en', 'ja', 'ko', 'fr', 'es', 'pt', 'it', 'ru', 'vi', 'de', 'ar']
 '''
-自动识别	auto
-中文	zh-CHS
-中文繁体	zh-CHT
-英文	en
-日文	ja
-韩文	ko
-法文	fr
-西班牙文	es
-葡萄牙文	pt
-意大利文	it
-俄文	ru
-越南文	vi
-德文	de
-阿拉伯文	ar
+自动识别	auto 0
+中文	zh-CHS 1
+中文繁体	zh-CHT 2
+英文	en 3
+日文	ja 4
+韩文	ko 5
+法文	fr 6
+西班牙文	es 7
+葡萄牙文	pt 8
+意大利文	it 9
+俄文	ru 10
+越南文	vi 11
+德文	de 12
+阿拉伯文	ar 13
 '''
+
+lang2index_dic = {
+    "汉语": 1,
+    "英语": 3,
+    "西班牙语": 7,
+    "法语": 6,
+    "德语": 12,
+    "意大利语": 9,
+    "俄语": 10,
+    "阿拉伯语": 13,
+    "日语": 4,
+    "韩语": 5,
+    "葡萄牙语": 8,
+    "中文繁体": 2,
+    "越南语": 11
+}
 
 
 def encrypt(signStr):
@@ -80,7 +96,7 @@ def translate(text, from_lang, to_lang):
 
 
 if __name__ == '__main__':
-    trans = translate("The text to be entered", LANG[3], LANG[5])
+    trans = translate("The text to be entered", LANG[0], LANG[1])
     # 返回类型有四种
     '''
     1#'不支持的语言类型'
@@ -100,4 +116,4 @@ if __name__ == '__main__':
     The text to be entered
     '''
 
-__all__ = ['translate', 'translation', 'LANG']
+__all__ = ['translate', 'translation', 'LANG', 'lang2index_dic']
