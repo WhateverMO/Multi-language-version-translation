@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = true
+name = "torchCPU"
+
 [packages]
 flask = "==1.1.4"
 redis = "*"
@@ -13,10 +18,10 @@ flask-script = "*"
 flask-migrate = "*"
 markupsafe = "==2.0.1"
 requests = "*"
-torchtext = "*"
-torch = "*"
-torchvision = "*"
-torchaudio = "*"
+torch = {version="*",index='torchCPU'}
+torchvision = {version="*",index='torchCPU'}
+torchaudio = {version="*",index='torchCPU'}
+torchtext = {version="*",index='torchCPU'}
 jieba = "*"
 transformers = "*"
 sentencepiece = "*"
