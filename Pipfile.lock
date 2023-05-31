@@ -672,6 +672,13 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==6.0"
+        "pytz": {
+            "hashes": [
+                "sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588",
+                "sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb"
+            ],
+            "index": "pypi",
+            "version": "==2023.3"
         },
         "redis": {
             "hashes": [
@@ -848,6 +855,9 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==67.8.0"
+            ],
+            "index": "pypi",
+            "version": "==2.31.0"
         },
         "six": {
             "hashes": [
@@ -1123,6 +1133,9 @@
             ],
             "markers": "platform_system == 'Linux' and platform_machine == 'x86_64'",
             "version": "==2.0.0"
+            ],
+            "index": "pypi",
+            "version": "==2.0.15"
         },
         "typing-extensions": {
             "hashes": [

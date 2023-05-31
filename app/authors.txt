@@ -1,0 +1,10 @@
+201,刘慈欣,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+202,东野圭吾,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+203,余华,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+204,J.K.罗琳,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+205,曹雪芹,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+206,卡勒德·胡赛尼,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+207,加西亚·马尔克斯,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+208,东野圭吾,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+209,石悦,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300
+210,圣埃克苏佩里,,http://192.168.111.142:8080/static/avatar_file/b2.jpg,,,,,,,716300

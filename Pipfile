@@ -21,6 +21,7 @@ jieba = "*"
 transformers = "*"
 sentencepiece = "*"
 sacremoses = "*"
+pytz = "*"
 
 [dev-packages]
 
