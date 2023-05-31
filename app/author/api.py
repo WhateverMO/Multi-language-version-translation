@@ -269,8 +269,17 @@ def get_my_books():
         books = []
         if datas:
             for data in datas:
-                books.append({'book_id': data.get('b_id'), 'book_name': data.get('name'),
-                              'desc': data.get('desc'), 'cover_path': data.get('cover_path')})
+                b_id = data.get('b_id')
+                lang = get_info_lang(data.get('lang_id'))
+                book_class = get_info_class(data.get('bc_id'))
+                author_name = select_author(data.get("author_id")).get("author_name")
+                desc = data.get('desc')
+                cover_path = data.get('cover_path')
+                book_name = data.get('name')
+                time = data.get('create_time')
+                books.append(
+                    {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                     'cover_path': cover_path, 'book_name': book_name, 'time': time})
             return jsonify(msg='查询到该作者的书籍', books=books, code=200)
         else:
             return jsonify(msg='该作者没有书籍', code=4000)
@@ -285,21 +294,16 @@ def book_detail(book_id, c_no):
     return jsonify(content_text=content_text, title=title)
 
 
-# 作者修改章节内容
-@author.route('/edit_my_books/<int:book_id>/<int:c_no>', methods=['GET', 'POST'])
+# 作者修改某章节内容
+@author.route('/edit_my_books/<int:book_id>/<int:c_no>', methods=['POST'])
 @author_login_required
 def edit_books_center(book_id, c_no):
-    if request.method == 'GET':
-        title = select_bookcontent(book_id, c_no)[0]
-        content_text = select_bookcontent(book_id, c_no)[1]
-        return jsonify(content_text=content_text, title=title)
-    if request.method == 'POST':
-        content = str(request.form.get("content"))
-        title = str(request.form.get('title'))
-        if add_content(book_id, c_no, title, content):
-            return jsonify(msg="提交成功", code=200)
-        else:
-            return jsonify(msg="提交失败，请重试", code=4000)
+    content = str(request.form.get("content"))
+    title = str(request.form.get('title'))
+    if add_content(book_id, c_no, title, content):
+        return jsonify(msg="提交成功", code=200)
+    else:
+        return jsonify(msg="提交失败，请重试", code=4000)
 
 
 # 上传书籍封面
@@ -325,13 +329,28 @@ def add_book_picture(book_id):
 
 
 # 搜索
-@author.route('/book/search/<string:book_name>', methods=['GET'])
-def book_search(book_name):
+@author.route('/book/search', methods=['POST'])
+def book_search():
+    book_name = request.form.get('book_name')
     res = search_book(book_name)
-    if not res:
-        return jsonify(msg='没有找到任何有关书籍', code=4000)
+    books=[]
+    if res:
+        for data in res:
+            b_id = data.get('b_id')
+            lang = get_info_lang(data.get('lang_id'))
+            book_class = get_info_class(data.get('bc_id'))
+            author_name = select_author(data.get("author_id")).get("author_name")
+            desc = data.get('desc')
+            cover_path = data.get('cover_path')
+            book_name = data.get('name')
+            time = data.get('create_time')
+            books.append(
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                 'cover_path': cover_path, 'book_name': book_name, 'time': time})
+        return jsonify(msg='找到有关书籍', books=books, code=200)
     else:
-        return jsonify(msg='找到有关书籍', books=res, code=200)
+        return jsonify(msg='没有找到任何有关书籍', code=4000)
+
 
 
 # 查看书籍的其他译本
@@ -342,8 +361,19 @@ def get_other_book(book_id):
     books = []
     if data != -1:
         for b_id in datas:
-            books.append(select_book(b_id))
-    return jsonify(books=books)
+            data = select_book(b_id)
+            # print(data)
+            lang = get_info_lang(data.get('lang_id'))
+            book_class = get_info_class(data.get('bc_id'))
+            author_name = select_author(data.get("author_id")).get("author_name")
+            desc = data.get('desc')
+            cover_path = data.get('cover_path')
+            book_name = data.get('name')
+            time = data.get('create_time')
+            books.append(
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                 'cover_path': cover_path, 'book_name': book_name, 'time': time})
+    return jsonify(books=books, code=200)
 
 
 # 译者翻译选项界面

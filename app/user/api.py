@@ -216,13 +216,27 @@ def update_user_avatar():
 
 
 # 搜索
-@user.route('/book/search/<string:book_name>', methods=['GET'])
-def book_search(book_name):
+@user.route('/book/search', methods=['POST'])
+def book_search():
+    book_name = request.form.get('book_name')
     res = search_book(book_name)
-    if not res:
-        return jsonify(msg='没有找到任何有关书籍', code=4000)
+    books = []
+    if res:
+        for data in res:
+            b_id = data.get('b_id')
+            lang = get_info_lang(data.get('lang_id'))
+            book_class = get_info_class(data.get('bc_id'))
+            author_name = select_author(data.get("author_id")).get("author_name")
+            desc = data.get('desc')
+            cover_path = data.get('cover_path')
+            book_name = data.get('name')
+            time = data.get('create_time')
+            books.append(
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                 'cover_path': cover_path, 'book_name': book_name, 'time': time})
+        return jsonify(msg='找到有关书籍', books=books, code=200)
     else:
-        return jsonify(msg='找到有关书籍', books=res, code=200)
+        return jsonify(msg='没有找到任何有关书籍', code=4000)
 
 
 # 书籍简介页面（含用户评论）
@@ -400,6 +414,7 @@ def get_barrage():
         return jsonify(msg='获取弹幕失败！', code=4000)
 
 
+# 获取收藏数
 @user.route('/get_user_collect_count', methods=['GET'])
 @user_login_required
 def get_user_collects():
