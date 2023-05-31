@@ -485,8 +485,14 @@ def ai_translate(lang_id):
     lang = get_info_lang(lang_id)
     text = request.form.get('text')
     try:
-        trans_text = translate(text, LANG[0], LANG[lang2index_dic[lang]]).translated_text[0]
-        return jsonify(msg='翻译成功', trans_text=trans_text, code=200)
+        trans = translate(text, LANG[0], LANG[lang2index_dic[lang]])
+        if trans == 2:
+            return jsonify(msg="文本选择过长!", code=4001)
+        elif trans == 1:
+            return jsonify(msg='该语言不支持机器翻译!', code=4002)
+        else:
+            trans_text = trans.translated_text[0]
+            return jsonify(msg='翻译成功', trans_text=trans_text, code=200)
     except Exception as e:
         print(e)
         return jsonify(msg="翻译发生异常，请重试!", code=4000)
