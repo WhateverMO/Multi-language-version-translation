@@ -658,7 +658,9 @@ def get_user_followed_authors(user_id):
             res = list()
             for author in followed_authors:
                 res.append({'author_id': author.author_id, 'author_name': author.author_name, 'picture': author.picture,
-                            'follower_count': author.follower_count})
+                            'age': author.age, 'gender': author.gender, 'follower_count': author.follower_count,
+                            'phone_number': author.phone_number, 'email': author.email,
+                            'works_count': author.works_count, 'area':author.area})
             return res
 
 
