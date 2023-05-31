@@ -290,9 +290,10 @@ def get_my_books():
                 cover_path = data.get('cover_path')
                 book_name = data.get('name')
                 time = data.get('create_time')
+                content_title = select_contents_by_a_book(b_id)
                 books.append(
                     {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
-                     'cover_path': cover_path, 'book_name': book_name, 'time': time})
+                     'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title})
             return jsonify(msg='查询到该作者的书籍', books=books, code=200)
         else:
             return jsonify(msg='该作者没有书籍', code=4000)
@@ -447,9 +448,20 @@ def translate_book(book_id, new_book_id, c_no):
             return jsonify(msg="译文提交失败", code=4000)
 
 
+# 获取能够翻译的图书
 @author.route('/get_all_book', methods=['GET'])
 @author_login_required
 def get_all_book():
-    basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     book_dir = basedir + '/app/static/book_file/'
     book_ids = os.listdir(book_dir)
+    books = []
+    for b_id in book_ids[:8]:
+        data = select_book(b_id)
+        book_name = data.get("name")
+        author_name = select_author(data.get("author_id")).get("author_name")
+        picture = data.get("cover_path")
+        book_desc = data.get("desc")
+        book = [b_id, book_name, author_name, book_desc, picture]
+        books.append(book)
+    return jsonify(books=books, code=200)
