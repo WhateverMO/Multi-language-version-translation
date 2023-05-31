@@ -278,6 +278,13 @@ def add_book_edition(root_b_id, book):
         info.append(b_id)
         r0.lset(keyname, listindex, json.dumps(info))
         sql.session.add(book)
+        author = sql.session.query(authores).filter(authores.author_id == book.author_id).first()
+        author.works_count += 1
+        sql.session.commit()
+        if not os.path.exists(bookfile_dir + str(b_id)):
+            os.mkdir(bookfile_dir + str(b_id))
+            with open(bookfile_dir + str(b_id) + '/.gitkeep', 'w') as fp:
+                pass
     return b_id
 
 
