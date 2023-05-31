@@ -56,7 +56,7 @@ def create_app(config_name):
             for file in files:
                 luns.append(lun_bos + file)
             books = []
-            for b_id in new_reco_book_ids:
+            for b_id in new_reco_book_ids[:4]:
                 if b_id not in hot_book_ids:
                     data = select_book(b_id)
                     book_name = data.get("name")
