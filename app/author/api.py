@@ -291,10 +291,16 @@ def get_my_books():
                 cover_path = data.get('cover_path')
                 book_name = data.get('name')
                 time = data.get('create_time')
+                root_book_id = data.get('rootbookid')
+                if root_book_id == b_id:
+                    is_original = '原作'
+                else:
+                    is_original = '译作'
                 content_title = select_contents_by_a_book(b_id)
                 books.append(
                     {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
-                     'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title})
+                     'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
+                     'is_original': is_original})
             return jsonify(msg='查询到该作者的书籍', books=books, code=200)
         else:
             return jsonify(msg='该作者没有书籍', code=4000)
@@ -423,9 +429,13 @@ def translate_option(book_id):
         if new_lang_id == lang_id:
             return jsonify(msg="您选择的翻译语言版本与当前书籍语言版本相同，请重新选择", code=4000)
         else:
+            # my_host = "http://" + myhost + ":5000"
+            # cover_url = my_host + "/static/cover_file/b1.jpg"
+            # 获取原书籍的封面图片url
+            cover_url = select_book(root_book_id).get('cover_path')
             new_book_id = add_book_edition(root_book_id,
                                            booklib(author_id=author_id, name=book_name, lang_id=new_lang_id,
-                                                   bc_id=bc_id, desc=book_desc))
+                                                   bc_id=bc_id, desc=book_desc, cover_path=cover_url))
             return jsonify(msg="可以开始翻译", new_book_id=new_book_id, code=200)
 
 
@@ -475,8 +485,14 @@ def ai_translate(lang_id):
     lang = get_info_lang(lang_id)
     text = request.form.get('text')
     try:
-        trans_text = translate(text, LANG[0], LANG[lang2index_dic[lang]]).translated_text[0]
-        return jsonify(msg='翻译成功', trans_text=trans_text, code=200)
+        trans = translate(text, LANG[0], LANG[lang2index_dic[lang]])
+        if trans == 2:
+            return jsonify(msg="文本选择过长!", code=4001)
+        elif trans == 1:
+            return jsonify(msg='该语言不支持机器翻译!', code=4002)
+        else:
+            trans_text = trans.translated_text[0]
+            return jsonify(msg='翻译成功', trans_text=trans_text, code=200)
     except Exception as e:
         print(e)
         return jsonify(msg="翻译发生异常，请重试!", code=4000)
