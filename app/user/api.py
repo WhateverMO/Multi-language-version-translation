@@ -145,10 +145,16 @@ def get_user_information():
     user_email = data.get("email")
     user_birthday = data.get("birthday")
     user_avatar = data.get("picture")
+    following_count = data.get('following_count')
+    libs = user_get_all_collection_lib(user_id)
+    collect_count = 0
+    for lib in libs:
+        collect_count += len(get_user_collection(user_id, lib))
     return jsonify(username=username, user_id=user_id, user_age=user_age, user_gender=user_gender,
                    user_area=user_area,
                    user_describe=user_describe, user_phone_number=user_phone_number, user_email=user_email,
-                   user_birthday=user_birthday, user_avatar=user_avatar, code=200)
+                   user_birthday=user_birthday, user_avatar=user_avatar, following_count=following_count,
+                   collect_count=collect_count, code=200)
 
 
 # 用户修改基本信息
@@ -226,13 +232,15 @@ def book_search():
             b_id = data.get('b_id')
             lang = get_info_lang(data.get('lang_id'))
             book_class = get_info_class(data.get('bc_id'))
-            author_name = select_author(data.get("author_id")).get("author_name")
+            author_id = data.get("author_id")
+            author_name = select_author(author_id).get("author_name")
             desc = data.get('desc')
             cover_path = data.get('cover_path')
             book_name = data.get('name')
             time = data.get('create_time')
             books.append(
-                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_id': author_id,
+                 'author_name': author_name, 'desc': desc,
                  'cover_path': cover_path, 'book_name': book_name, 'time': time})
         return jsonify(msg='找到有关书籍', books=books, code=200)
     else:
@@ -246,7 +254,8 @@ def read_book_index(book_id):
     if request.method == 'GET':
         data = select_book(book_id)
         book_name = data.get("name")
-        author_name = select_author(data.get("author_id")).get("author_name")
+        author_id = data.get("author_id")
+        author_name = select_author(author_id).get("author_name")
         cover_path = data.get("cover_path")
         book_describe = data.get("desc")
         # 书籍评论
@@ -257,7 +266,7 @@ def read_book_index(book_id):
         if content_list == -1:
             return jsonify(msg='该书无章节或该书不存在', code=4000)
         else:
-            return jsonify(book_name=book_name, author_name=author_name,
+            return jsonify(book_name=book_name, author_id=author_id, author_name=author_name,
                            book_describe=book_describe, cover_path=cover_path, content_list=content_list,
                            barrages=barrage, code=200)
     # 用户发送评论
@@ -273,12 +282,20 @@ def read_book_index(book_id):
 def start_read(book_id, c_no):
     user_id = request.form.get("user_id")
     time = request.form.get("time")
-    title = select_bookcontent(book_id, c_no)[0]
-    content_text = select_bookcontent(book_id, c_no)[1]
-    if user_id != '0':
-        add_user_read_history(user_id, book_id, c_no, time)
-        print(get_user_read_history(user_id))
-    return jsonify(content_text=content_text, title=title)
+    data = select_bookcontent(book_id, c_no)
+    if data == 0:
+        return jsonify(msg='前面没有更多章节了!', code=4000)
+    elif data == -2:
+        return jsonify(msg='后面没有更多章节了!', code=4001)
+    elif data == -1 or data == -3:
+        return jsonify(msg='发生错误了!', code=4002)
+    else:
+        title = data[0]
+        content_text = data[1]
+        if user_id != '0':
+            add_user_read_history(user_id, book_id, c_no, time)
+            print(get_user_read_history(user_id))
+        return jsonify(content_text=content_text, title=title, code=200)
 
 
 # 查看阅读记录
@@ -414,13 +431,40 @@ def get_barrage():
         return jsonify(msg='获取弹幕失败！', code=4000)
 
 
-# 获取收藏数
-@user.route('/get_user_collect_count', methods=['GET'])
+# 用户关注作者
+@user.route('/follow_author/<int:author_id>', methods=['GET'])
 @user_login_required
-def get_user_collects():
+def following_author(author_id):
     user_id = g.user_id
-    libs = user_get_all_collection_lib(user_id)
-    count = 0
-    for lib in libs:
-        count += len(get_user_collection(user_id, lib))
-    return jsonify(count=count, code=200)
+    try:
+        add_user_follow_author(fan(user_id=user_id, author_id=author_id))
+        return jsonify(msg='关注成功', code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg='关注失败', code=4000)
+
+
+# 用户取消关注
+@user.route('/remove_follow_author/<int:author_id>', methods=['GET'])
+@user_login_required
+def remove_follow_author(author_id):
+    user_id = g.user_id
+    try:
+        remove_user_unfollow_author(user_id, author_id)
+        return jsonify(msg='取消成功', code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg='取消失败', code=4000)
+
+
+# 用户查看自己关注的作者
+@user.route('/get_followed_author', methods=['GET'])
+@user_login_required
+def get_followed_author():
+    user_id = g.user_id
+    try:
+        data = get_user_followed_authors(user_id)
+        return jsonify(authors=data, code=200)
+    except Exception as e:
+        print(e)
+        return jsonify(msg='出错了,请重试', code=4000)

@@ -139,7 +139,7 @@ def select_user(user_id):
         return {'user_id': ret.user_id, 'user_name': ret.user_name, 'age': ret.age,
                 "picture": ret.picture, "gender": ret.gender, "phone_number": ret.phone_number,
                 "email": ret.email, "birthday": ret.birthday, "area": ret.area, 'user_describe': ret.user_describe,
-                "activate_time": ret.activate_time
+                "activate_time": ret.activate_time, 'following_count': ret.following_count
                 }
     except AttributeError:
         print("user not exist")
@@ -194,7 +194,8 @@ def select_author(author_id):
         return {'author_id': ret.author_id, 'author_name': ret.author_name, 'age': ret.age,
                 "picture": ret.picture, "gender": ret.gender, "phone_number": ret.phone_number,
                 "email": ret.email, "birthday": ret.birthday, "area": ret.area,
-                'author_describe': ret.author_describe}
+                'author_describe': ret.author_describe, 'follower_count': ret.follower_count,
+                'works_count': ret.works_count}
     except AttributeError:
         print("not exist")
         return -1
@@ -254,6 +255,9 @@ def add_book(book):
         rootbook = rootbooklib(root_b_id=root_book_id, orgin_b_id=b_id, info=list())
         rootbook.add2redis()
         sql.session.add(book)
+        author = sql.session.query(authores).filter(authores.author_id == book.author_id).first()
+        author.works_count += 1
+        sql.session.commit()
         if not os.path.exists(bookfile_dir + str(b_id)):
             os.mkdir(bookfile_dir + str(b_id))
             with open(bookfile_dir + str(b_id) + '/.gitkeep', 'w') as fp:
@@ -429,12 +433,18 @@ def select_bookcontent(b_id, c_no):
     if ret == -1:
         return -1
     content_path = str(ret['b_id']) + '/' + str(c_no) + '.txt'
-    with open(bookfile_dir + '/' + content_path, 'r') as file:
-        content = file.read()
-    ret = r0.lindex(book_lib_content_text + str(b_id), c_no)
-    if ret == None:
-        return -1
-    return [ret, content]
+    try:
+        with open(bookfile_dir + '/' + content_path, 'r') as file:
+            content = file.read()
+    except FileNotFoundError:
+        return -2
+    try:
+        ret = r0.lindex(book_lib_content_text + str(b_id), c_no)
+        if ret == None:
+            return -1
+        return [ret, content]
+    except Exception:
+        return -3
 
 
 def select_all_lang_id():
@@ -614,6 +624,44 @@ def select_barrage_by_b_id(book_id):
     return res
 
 
+def add_user_follow_author(fan):
+    with UsingAlchemy(log_label='添加用户关注作者') as sql:
+        user = sql.session.query(users).filter(users.user_id == fan.user_id).first()
+        author = sql.session.query(authores).filter(authores.author_id == fan.author_id).first()
+        if user and author:
+            sql.session.add(fan)
+            user.following_count += 1
+            author.follower_count += 1
+            sql.session.commit()
+
+
+def remove_user_unfollow_author(user_id, author_id):
+    with UsingAlchemy(log_label='用户取消关注作者') as sql:
+        user = sql.session.query(users).filter(users.user_id == user_id).first()
+        author = sql.session.query(authores).filter(authores.author_id == author_id).first()
+        if user and author:
+            f = sql.session.query(fan).filter(
+                fan.user_id == user.user_id, fan.author_id == author.author_id
+            ).first()
+            if f:
+                sql.session.delete(f)
+                user.following_count -= 1
+                author.follower_count -= 1
+                sql.session.commit()
+
+
+def get_user_followed_authors(user_id):
+    with UsingAlchemy(log_label='用户获取所有关注作者') as sql:
+        user = sql.session.query(users).filter(users.user_id == user_id).first()
+        if user:
+            followed_authors = sql.session.query(authores).join(fan).filter(fan.user_id == user.user_id).all()
+            res = list()
+            for author in followed_authors:
+                res.append({'author_id': author.author_id, 'author_name': author.author_name, 'picture': author.picture,
+                            'follower_count': author.follower_count})
+            return res
+
+
 __all__ = ['users', 'authores', 'booklib',
            'user_id_pool_size', 'user_id_pool_lock_size', 'author_id_pool_size',
            'author_id_pool_lock_size', 'root_b_id_pool_size', 'b_id_pool_size',
@@ -630,4 +678,5 @@ __all__ = ['users', 'authores', 'booklib',
            'user_create_a_collection_lib', 'user_delate_a_collection_lib',
            'get_user_collection', 'user_get_all_collection_lib',
            'get_info_class', 'get_info_lang', 'add_barrages', 'select_barrages', 'add_user_book_barrage',
-           'select_barrage_by_b_id', 'add_book_class', 'add_language']
+           'select_barrage_by_b_id', 'add_book_class', 'add_language', 'add_user_follow_author',
+           'remove_user_unfollow_author', 'get_user_followed_authors']

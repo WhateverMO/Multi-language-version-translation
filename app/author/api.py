@@ -142,12 +142,15 @@ def get_author_information():
             author_email = data.get("email")
             author_birthday = data.get("birthday")
             author_avatar = data.get("picture")
+            follower_count = data.get('follower_count')
+            works_count = data.get('works_count')
             return jsonify(author_name=author_name, author_id=author_id, author_age=author_age,
                            author_gender=author_gender,
                            author_area=author_area,
                            author_describe=author_describe, author_phone_number=author_phone_number,
                            author_email=author_email,
-                           author_birthday=author_birthday, author_avatar=author_avatar, code=200)
+                           author_birthday=author_birthday, author_avatar=author_avatar, follower_count=follower_count,
+                           works_count=works_count, code=200)
 
 
 # 作者修改基本信息
@@ -229,20 +232,30 @@ def update_user_avatar():
 @author_login_required
 def author_add_books_index():
     if request.method == 'POST':
+        author_id = g.author_id
+        name = request.form.get("name")
+        lang_id = request.form.get("lang_id")
+        bc_id = request.form.get("bc_id")
+        book_desc = request.form.get("book_desc")
+        picture = request.files.get('picture')
+        my_host = "http://" + myhost + ":5000"
+        cover_url = my_host + "/static/cover_file/b1.jpg"
         try:
-            author_id = g.author_id
-            name = request.form.get("name")
-            lang_id = request.form.get("lang_id")
-            bc_id = request.form.get("bc_id")
-            book_desc = request.form.get("book_desc")
-            my_host = "http://" + myhost + ":5000"
-            picture = my_host + "/static/cover_file/b1.jpg"
             book_id = add_book(
                 booklib(author_id=author_id, name=name, lang_id=lang_id, bc_id=bc_id, desc=book_desc,
-                        cover_path=picture))
+                        cover_path=cover_url))
         except Exception as e:
             print(e)
             return jsonify(msg="建立新书失败请重试", code=4000)
+        if picture is not None:
+            filename = secure_filename(picture.filename)
+            basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            filename = str(book_id) + "." + filename.rsplit('.', 1)[1]
+            file_path = basedir + "/app/static/cover_file/" + filename
+            picture.save(file_path)
+            my_host = "http://" + myhost + ":5000"
+            cover_url = my_host + "/static/cover_file/" + filename
+            update_book(book_id, {"cover_path": cover_url})
         return jsonify(msg="建立新书成功", code=200, book_id=book_id, author_id=author_id, lang_id=lang_id)
 
 
@@ -333,24 +346,25 @@ def add_book_picture(book_id):
 def book_search():
     book_name = request.form.get('book_name')
     res = search_book(book_name)
-    books=[]
+    books = []
     if res:
         for data in res:
             b_id = data.get('b_id')
             lang = get_info_lang(data.get('lang_id'))
             book_class = get_info_class(data.get('bc_id'))
-            author_name = select_author(data.get("author_id")).get("author_name")
+            author_id = data.get("author_id")
+            author_name = select_author(author_id).get("author_name")
             desc = data.get('desc')
             cover_path = data.get('cover_path')
             book_name = data.get('name')
             time = data.get('create_time')
             books.append(
-                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_id': author_id,
+                 'author_name': author_name, 'desc': desc,
                  'cover_path': cover_path, 'book_name': book_name, 'time': time})
         return jsonify(msg='找到有关书籍', books=books, code=200)
     else:
         return jsonify(msg='没有找到任何有关书籍', code=4000)
-
 
 
 # 查看书籍的其他译本
@@ -365,13 +379,15 @@ def get_other_book(book_id):
             # print(data)
             lang = get_info_lang(data.get('lang_id'))
             book_class = get_info_class(data.get('bc_id'))
-            author_name = select_author(data.get("author_id")).get("author_name")
+            author_id = data.get("author_id")
+            author_name = select_author(author_id).get("author_name")
             desc = data.get('desc')
             cover_path = data.get('cover_path')
             book_name = data.get('name')
             time = data.get('create_time')
             books.append(
-                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name, 'desc': desc,
+                {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_id': author_id,
+                 'author_name': author_name, 'desc': desc,
                  'cover_path': cover_path, 'book_name': book_name, 'time': time})
     return jsonify(books=books, code=200)
 

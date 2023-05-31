@@ -45,6 +45,7 @@ class users(Base):
     user_describe = Column(String(128), default=None)
     activate_time = Column(DATETIME, nullable=False)
     password = Column(String(64), nullable=False)
+    following_count = Column(Integer, default=0)  # 关注数
 
 
 class authores(Base):
@@ -60,6 +61,8 @@ class authores(Base):
     birthday = Column(DATE, nullable=True)
     area = Column(String(64), nullable=True)
     password = Column(String(64), nullable=False)
+    follower_count = Column(Integer, default=0)  # 粉丝数
+    works_count = Column(Integer, default=0)  # 作品数
 
 
 class bookclass(Base):
@@ -118,6 +121,13 @@ class user_books_barrage(Base):
     create_time = Column(DATETIME, nullable=False, default=str(
         datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))),
                          primary_key=True)
+
+
+class fan(Base):
+    __tablename__ = 'fan'
+    fan_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey(users.user_id))
+    author_id = Column(Integer, ForeignKey(authores.author_id))
 
 
 if __name__ == '__main__':
