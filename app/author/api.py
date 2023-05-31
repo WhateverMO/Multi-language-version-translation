@@ -141,7 +141,7 @@ def get_author_information():
             author_phone_number = data.get("phone_number")
             author_email = data.get("email")
             author_birthday = data.get("birthday")
-            author_avatar = data.get("author_avatar")
+            author_avatar = data.get("picture")
             return jsonify(author_name=author_name, author_id=author_id, author_age=author_age,
                            author_gender=author_gender,
                            author_area=author_area,
