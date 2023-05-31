@@ -3,9 +3,9 @@ import json
 import pickle
 import pymysql
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column,DATE, DATETIME,Integer, String, ForeignKey, UniqueConstraint, Index, Text,BOOLEAN
+from sqlalchemy import Column, DATE, DATETIME, Integer, String, ForeignKey, UniqueConstraint, Index, Text, BOOLEAN
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine,and_
+from sqlalchemy import create_engine, and_
 from timeit import default_timer
 
 host = '43.138.162.174'
@@ -17,17 +17,18 @@ port_mysql = 3306
 db_mysql = 'test_db'
 User = 'root'
 Password = 'shejidasai2022'
-Charset='utf8'
+Charset = 'utf8'
 
-pool = redis.ConnectionPool(host=host,port=port_redis,decode_responses=True,password=Password)
-r0 = redis.StrictRedis(db=db_redis_0,connection_pool=pool)
-r1 = redis.StrictRedis(db=db_redis_1,connection_pool=pool)
+pool = redis.ConnectionPool(host=host, port=port_redis, decode_responses=True, password=Password)
+r0 = redis.StrictRedis(db=db_redis_0, connection_pool=pool)
+r1 = redis.StrictRedis(db=db_redis_1, connection_pool=pool)
 
-g_mysql_url = 'mysql+pymysql://%s:%s@%s:%d/%s?charset=%s' % (User, Password, host, port_mysql,db_mysql,Charset)
+g_mysql_url = 'mysql+pymysql://%s:%s@%s:%d/%s?charset=%s' % (User, Password, host, port_mysql, db_mysql, Charset)
 engine = create_engine(g_mysql_url)
 Base = declarative_base()
 # engine.execute('ALTER DATABASE '+db_mysql+' CHARSET=UTF8;')
 Session = sessionmaker(bind=engine)
+
 
 class UsingAlchemy(object):
 
@@ -40,8 +41,8 @@ class UsingAlchemy(object):
         """
         self._log_time = log_time
         self._commit = commit
-        self._log_label = log_label+" -- 总用时"
-        self._session = Session(bind=engine,expire_on_commit=False)
+        self._log_label = log_label + " -- 总用时"
+        self._session = Session(bind=engine, expire_on_commit=False)
 
     def __enter__(self):
 

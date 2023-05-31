@@ -42,7 +42,11 @@ def create_app(config_name):
         if request.method == 'GET':
             basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
             reco_book_dir = basedir + '/app/static/book_file/'
-            reco_book_ids = sorted(os.listdir(reco_book_dir))
+            reco_book_ids = os.listdir(reco_book_dir)
+            new_reco_book_ids = []
+            for id in reco_book_ids:
+                if id not in ['1', '2', '3', '4', '5', '6']:
+                    new_reco_book_ids.append(id)
             hot_book_ids = select_hot_book()[0]
             my_host = 'http://' + myhost + ':5000'
             lun_bos = my_host + "/static/lun_bo_file/"
@@ -52,8 +56,7 @@ def create_app(config_name):
             for file in files:
                 luns.append(lun_bos + file)
             books = []
-            print(hot_book_ids)
-            for b_id in reco_book_ids:
+            for b_id in new_reco_book_ids:
                 if b_id not in hot_book_ids:
                     data = select_book(b_id)
                     book_name = data.get("name")

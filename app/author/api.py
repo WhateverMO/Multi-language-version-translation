@@ -228,35 +228,35 @@ def update_user_avatar():
 
 
 # 作者添加书籍选项页面
-@author.route('/add_books_index', methods=['POST', 'GET'])
+@author.route('/add_books_index', methods=['POST'])
 @author_login_required
 def author_add_books_index():
-    if request.method == 'POST':
-        author_id = g.author_id
-        name = request.form.get("name")
-        lang_id = request.form.get("lang_id")
-        bc_id = request.form.get("bc_id")
-        book_desc = request.form.get("book_desc")
-        picture = request.files.get('picture')
+    author_id = g.author_id
+    data = request.form
+    name = data.get("name")
+    lang_id = data.get("lang_id")
+    bc_id = data.get("bc_id")
+    book_desc = data.get("book_desc")
+    picture = request.files.get('picture')
+    my_host = "http://" + myhost + ":5000"
+    cover_url = my_host + "/static/cover_file/b1.jpg"
+    try:
+        book_id = add_book(
+            booklib(author_id=author_id, name=name, lang_id=lang_id, bc_id=bc_id, desc=book_desc,
+                    cover_path=cover_url))
+    except Exception as e:
+        print(e)
+        return jsonify(msg="建立新书失败请重试", code=4000)
+    if picture is not None:
+        filename = secure_filename(picture.filename)
+        basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        filename = str(book_id) + "." + filename.rsplit('.', 1)[1]
+        file_path = basedir + "/app/static/cover_file/" + filename
+        picture.save(file_path)
         my_host = "http://" + myhost + ":5000"
-        cover_url = my_host + "/static/cover_file/b1.jpg"
-        try:
-            book_id = add_book(
-                booklib(author_id=author_id, name=name, lang_id=lang_id, bc_id=bc_id, desc=book_desc,
-                        cover_path=cover_url))
-        except Exception as e:
-            print(e)
-            return jsonify(msg="建立新书失败请重试", code=4000)
-        if picture is not None:
-            filename = secure_filename(picture.filename)
-            basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-            filename = str(book_id) + "." + filename.rsplit('.', 1)[1]
-            file_path = basedir + "/app/static/cover_file/" + filename
-            picture.save(file_path)
-            my_host = "http://" + myhost + ":5000"
-            cover_url = my_host + "/static/cover_file/" + filename
-            update_book(book_id, {"cover_path": cover_url})
-        return jsonify(msg="建立新书成功", code=200, book_id=book_id, author_id=author_id, lang_id=lang_id)
+        cover_url = my_host + "/static/cover_file/" + filename
+        update_book(book_id, {"cover_path": cover_url})
+    return jsonify(msg="建立新书成功", code=200, book_id=book_id, author_id=author_id, lang_id=lang_id)
 
 
 # 作者添加书籍(只能是原始语言)
@@ -445,3 +445,11 @@ def translate_book(book_id, new_book_id, c_no):
             return jsonify(msg="译文提交成功", code=200)
         else:
             return jsonify(msg="译文提交失败", code=4000)
+
+
+@author.route('/get_all_book', methods=['GET'])
+@author_login_required
+def get_all_book():
+    basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    book_dir = basedir + '/app/static/book_file/'
+    book_ids = os.listdir(book_dir)
