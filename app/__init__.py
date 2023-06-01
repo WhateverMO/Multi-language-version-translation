@@ -5,7 +5,7 @@ from flask_cors import *
 from Database import *
 
 # myhost = '192.168.67.142'  # 测试端口
-myhost = 'localhost'  # 本地端口
+myhost = '127.0.0.1'  # 本地端口
 
 
 def create_app(config_name):
