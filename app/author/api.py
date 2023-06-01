@@ -309,7 +309,7 @@ def get_my_books():
                          'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
                          'is_original': is_original, 'flag': 1})
                 else:
-                    return jsonify("数据库出错了！", code=4001)
+                    return jsonify(msg="数据库出错了！", code=4001)
             return jsonify(msg='查询到该作者的书籍', books=books, code=200)
         else:
             return jsonify(msg='该作者没有书籍', code=4000)
