@@ -50,6 +50,7 @@ pipenv install
 run backend:
 
 ```bash
+# this command will background running
 pipenv run python manage.py &
 ```
 
