@@ -27,6 +27,7 @@ transformers = "*"
 sentencepiece = "*"
 sacremoses = "*"
 pytz = "*"
+chardet = "*"
 
 [dev-packages]
 

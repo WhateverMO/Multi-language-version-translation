@@ -3,7 +3,7 @@ import os
 import time
 
 import pytz as pytz
-
+import chardet
 from db_struct import *
 
 user_id_pool_size = 400
@@ -394,9 +394,13 @@ def select_all_edition_b_id_by_root_id(root_id):
 
 
 def mkdir_write(filepath, filename, content):
+    pt = bookfile_dir + filepath + "/" + filename
     if not os.path.exists(bookfile_dir + filepath):
         os.makedirs(bookfile_dir + filepath)
-    with open(bookfile_dir + filepath + "/" + filename, 'w') as file:
+    with open(pt, 'rb') as f:
+        result = chardet.detect(f.read())
+        encoding = result['encoding']
+    with open(pt, 'w', encoding=encoding) as file:
         file.write(content)
 
 
