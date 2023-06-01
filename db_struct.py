@@ -102,6 +102,7 @@ class booklib(Base):
     cover_path = Column(String(64))
     create_time = Column(DATETIME, nullable=False, default=str(
         datetime.datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone("Asia/Shanghai"))))
+    is_original = Column(String(64), nullable=False)
 
 
 class user_barrage(Base):

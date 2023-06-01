@@ -252,12 +252,12 @@ def add_book(book):
             book.b_id = b_id
         root_book_id = del_a_root_b_id_from_pool(sql)
         book.rootbookid = root_book_id
+        book.is_original = "原作"
         rootbook = rootbooklib(root_b_id=root_book_id, orgin_b_id=b_id, info=list())
         rootbook.add2redis()
         sql.session.add(book)
         author = sql.session.query(authores).filter(authores.author_id == book.author_id).first()
         author.works_count += 1
-        sql.session.commit()
         if not os.path.exists(bookfile_dir + str(b_id)):
             os.mkdir(bookfile_dir + str(b_id))
             with open(bookfile_dir + str(b_id) + '/.gitkeep', 'w') as fp:
@@ -271,6 +271,7 @@ def add_book_edition(root_b_id, book):
             b_id = del_a_b_id_from_pool(sql)
             book.b_id = b_id
         book.rootbookid = root_b_id
+        book.is_original = "译作"
         keyname = book_lib_text + str(root_b_id)
         listindex = 0
         info = r0.lindex(keyname, listindex)

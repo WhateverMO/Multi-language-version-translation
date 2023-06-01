@@ -292,25 +292,24 @@ def get_my_books():
                 cover_path = data.get('cover_path')
                 book_name = data.get('name')
                 time = data.get('create_time')
-                root_book_id = data.get('rootbookid')
+                is_original = data.get('is_original')
                 content_title = select_contents_by_a_book(b_id)
-                if root_book_id == b_id:
-                    is_original = '原作'
+                if is_original is '原作':
                     books.append(
                         {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
                          'author_name': author_name,
                          'desc': desc,
                          'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
-                         'is_original': is_original, 'root_book_id': 0})
+                         'is_original': is_original, 'flag': 0})
+                elif is_original is '译作':
+                    books.append(
+                        {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
+                         'author_name': author_name,
+                         'desc': desc,
+                         'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
+                         'is_original': is_original, 'flag': 1})
                 else:
-                    is_original = '译作'
-                    books.append(
-                        {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
-                         'author_name': author_name,
-                         'desc': desc,
-                         'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
-                         'is_original': is_original, 'root_book_id': root_book_id})
-
+                    return jsonify("数据库出错了！", code=4001)
             return jsonify(msg='查询到该作者的书籍', books=books, code=200)
         else:
             return jsonify(msg='该作者没有书籍', code=4000)
