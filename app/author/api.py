@@ -284,7 +284,8 @@ def get_my_books():
         if datas:
             for data in datas:
                 b_id = data.get('b_id')
-                lang = get_info_lang(data.get('lang_id'))
+                lang_id = data.get('lang_id')
+                lang = get_info_lang(lang_id)
                 book_class = get_info_class(data.get('bc_id'))
                 author_name = select_author(data.get("author_id")).get("author_name")
                 desc = data.get('desc')
@@ -296,14 +297,16 @@ def get_my_books():
                 if root_book_id == b_id:
                     is_original = '原作'
                     books.append(
-                        {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name,
+                        {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
+                         'author_name': author_name,
                          'desc': desc,
                          'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
-                         'is_original': is_original})
+                         'is_original': is_original, 'root_book_id': 0})
                 else:
                     is_original = '译作'
                     books.append(
-                        {'book_id': b_id, 'book_class': book_class, 'lang': lang, 'author_name': author_name,
+                        {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
+                         'author_name': author_name,
                          'desc': desc,
                          'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
                          'is_original': is_original, 'root_book_id': root_book_id})
