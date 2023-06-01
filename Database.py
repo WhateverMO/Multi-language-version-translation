@@ -471,7 +471,8 @@ def select_this_author_s_all_book(author_id):
         for book in ret:
             res.append({'b_id': book.b_id, 'author_id': book.author_id, 'lang_id': book.lang_id,
                         'bc_id': book.bc_id, 'rootbookid': book.rootbookid, 'name': book.name,
-                        'desc': book.desc, 'cover_path': book.cover_path, 'create_time': book.create_time})
+                        'desc': book.desc, 'cover_path': book.cover_path, 'create_time': book.create_time,
+                        'is_original': book.is_original})
     return res
 
 
