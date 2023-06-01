@@ -36,7 +36,7 @@ this is the example of ai translate
 
 ## how to use
 
-install pyenv and pipenv in your distribution.
+install pyenv and pipenv in your distribution first.
 
 and then do following command to init python venv:
 
@@ -53,8 +53,17 @@ run backend:
 pipenv run python manage.py &
 ```
 
-run frontend:
+run frontend as dev:
 
 ```bash
+cd web
+npm run server
+```
 
+or you can use nginx to run the fronted:
+
+```bash
+# edit the nginx.conf to change the fronted path and server address
+vim nginx.conf
+nginx -c nginx.conf
 ```
