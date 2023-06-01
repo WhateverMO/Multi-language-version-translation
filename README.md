@@ -40,28 +40,21 @@ install pyenv and pipenv in your distribution.
 
 and then do following command to init python venv:
 
-'''bash
-
+```bash
 pyenv install 3.11.3
-
 cd path/of/this/project
-
 pyenv local 3.11.3
-
 pipenv install
-
-'''
+```
 
 run backend:
 
-'''bash
-
+```bash
 pipenv run python manage.py &
-
-'''
+```
 
 run frontend:
 
-'''bash
+```bash
 
-'''
+```
