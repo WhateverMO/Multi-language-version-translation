@@ -294,14 +294,14 @@ def get_my_books():
                 time = data.get('create_time')
                 is_original = data.get('is_original')
                 content_title = select_contents_by_a_book(b_id)
-                if is_original is '原作':
+                if is_original == '原作':
                     books.append(
                         {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
                          'author_name': author_name,
                          'desc': desc,
                          'cover_path': cover_path, 'book_name': book_name, 'time': time, 'content_title': content_title,
                          'is_original': is_original, 'flag': 0})
-                elif is_original is '译作':
+                elif is_original == '译作':
                     books.append(
                         {'book_id': b_id, 'book_class': book_class, 'lang_id': lang_id, 'lang': lang,
                          'author_name': author_name,
