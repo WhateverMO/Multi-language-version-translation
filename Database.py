@@ -397,10 +397,10 @@ def mkdir_write(filepath, filename, content):
     pt = bookfile_dir + filepath + "/" + filename
     if not os.path.exists(bookfile_dir + filepath):
         os.makedirs(bookfile_dir + filepath)
-    with open(pt, 'rb') as f:
-        result = chardet.detect(f.read())
-        encoding = result['encoding']
-    with open(pt, 'w', encoding=encoding) as file:
+    # with open(pt, 'rb') as f:
+    #     result = chardet.detect(f.read())
+    #     encoding = result['encoding']
+    with open(pt, 'w', encoding='utf-8') as file:
         file.write(content)
 
 
