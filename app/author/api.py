@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from Database import *
-from app import myhost
+from app import url_host
 from youdao_api import *
 
 
@@ -37,7 +37,7 @@ def author_register():
 
         if password != password2:
             return jsonify(msg="两次密码不一致", code=4001)
-        my_host = "http://" + myhost + ":5000"
+        my_host = "http://" + url_host
         avatar = my_host + "/static/avatar_file/b2.jpg"
         author_id = add_author(authores(author_name=author_name, password=password, picture=avatar))
         # 保存登陆状态到session中
@@ -65,6 +65,7 @@ def login():
                 session["author_id"] = author_id
                 author_name = select_author(author_id).get("author_name")
                 session["author_name"] = author_name
+                print(session)
                 return jsonify(msg="登陆成功", code=200)
             else:
                 return jsonify(msg='账号或密码错误', code=4000)
@@ -218,7 +219,7 @@ def update_user_avatar():
             return jsonify(msg="未上传图片", code=4000)
         try:
             image_file.save(file_path)
-            my_host = "http://" + myhost + ":5000"
+            my_host = "http://" + url_host
             avatar_url = my_host + "/static/avatar_file/" + filename
         except Exception as e:
             print(e)
@@ -239,7 +240,7 @@ def author_add_books_index():
     bc_id = data.get("bc_id")
     book_desc = data.get("book_desc")
     picture = request.files.get('picture')
-    my_host = "http://" + myhost + ":5000"
+    my_host = "http://" + url_host
     cover_url = my_host + "/static/cover_file/b1.jpg"
     try:
         book_id = add_book(
@@ -254,7 +255,7 @@ def author_add_books_index():
         filename = str(book_id) + "." + filename.rsplit('.', 1)[1]
         file_path = basedir + "/app/static/cover_file/" + filename
         picture.save(file_path)
-        my_host = "http://" + myhost + ":5000"
+        my_host = "http://" + url_host
         cover_url = my_host + "/static/cover_file/" + filename
         update_book(book_id, {"cover_path": cover_url})
     return jsonify(msg="建立新书成功", code=200, book_id=book_id, author_id=author_id, lang_id=lang_id)
@@ -349,7 +350,7 @@ def add_book_picture(book_id):
         return jsonify(msg="未上传图片", code=4000)
     try:
         cover_file.save(file_path)
-        my_host = "http://" + myhost + ":5000"
+        my_host = "http://" + url_host
         cover_url = my_host + "/static/cover_file/" + filename
     except Exception as e:
         print(e)
@@ -438,7 +439,7 @@ def translate_option(book_id):
         if new_lang_id == lang_id:
             return jsonify(msg="您选择的翻译语言版本与当前书籍语言版本相同，请重新选择", code=4000)
         else:
-            # my_host = "http://" + myhost + ":5000"
+            # my_host = "http://" + url_host
             # cover_url = my_host + "/static/cover_file/b1.jpg"
             # 获取原书籍的封面图片url
             cover_url = select_book(root_book_id).get('cover_path')
@@ -454,8 +455,10 @@ def translate_option(book_id):
 def translate_book(book_id, new_book_id, c_no):
     # 显示原文
     if request.method == 'GET':
-        title = select_bookcontent(book_id, c_no)[0]
-        content = select_bookcontent(book_id, c_no)[1]
+        data = select_bookcontent(book_id, c_no)
+        print(data)
+        title = data[0]
+        content = data[1]
         return jsonify(content=content, title=title)
     # 提交译文
     elif request.method == 'POST':

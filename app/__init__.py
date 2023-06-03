@@ -5,7 +5,8 @@ from flask_cors import *
 from Database import *
 
 # myhost = '192.168.67.142'  # 测试端口
-myhost = '127.0.0.1'  # 本地端口
+myhost = '0.0.0.0'  # 本地端口
+url_host = '43.138.162.174'
 
 
 def create_app(config_name):
@@ -14,6 +15,7 @@ def create_app(config_name):
     config_name: 选择环境的参数
     """
     app = Flask(__name__)
+    # app.config['SESSION_COOKIE_PATH'] = '/'
     # CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
     config_class = config_map.get(config_name)
     app.config.from_object(config_class)
@@ -48,7 +50,7 @@ def create_app(config_name):
                 if id not in ['1', '2', '3', '4', '5', '6']:
                     new_reco_book_ids.append(id)
             hot_book_ids = select_hot_book()[0]
-            my_host = 'http://' + myhost + ':5000'
+            my_host = 'http://' + '43.138.162.174'
             lun_bos = my_host + "/static/lun_bo_file/"
             lun_path = basedir + '/app/static/lun_bo_file/'
             luns = []
