@@ -3,7 +3,7 @@
     <ul>
       <el-upload
         class="avatar-uploader"
-        action="https://jsonplaceholder.typicode.com/posts/"
+        action="http://43.138.162.174/api/author/information/modification/update_avatar"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
@@ -12,6 +12,7 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
     </ul>
+
     <ul>
       <li>
         用户名：<el-input
@@ -52,7 +53,7 @@
       <li>
         个人介绍:<el-input
           type="textarea"
-          :rows="4"
+          :rows="3"
           placeholder="请输入介绍内容"
           v-model="textarea"
         >
@@ -65,7 +66,8 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
+import store from "@/store";
 export default {
   data() {
     return {
@@ -113,18 +115,27 @@ export default {
           label: "北京",
         },
       ],
-      radio: "",
-      input: "",
-      textarea: "",
-      old: "",
-      place: "",
-      imageUrl: "",
+      radio: store.state.sex,
+      input: store.state.name,
+      textarea: store.state.intro,
+      old: store.state.age,
+      place: store.state.place,
+      imageUrl: store.state.image,
     };
   },
 
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(res, files) {
+      this.imageUrl = URL.createObjectURL(files.raw);
+      var formData = new FormData();
+      formData.append("file", files.raw, files.name);
+      const path = "/api/author/information/modification/update_avatar";
+      request.post(path, formData).then((res) => {
+        if (res.data.code == 200) {
+          alert(res.data.msg);
+          // this.$router.push("/readerinformation");
+        }
+      });
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg";
@@ -138,6 +149,7 @@ export default {
       }
       return isJPG && isLt2M;
     },
+
     checkinfo() {
       var data = {
         author_name: this.input,
@@ -146,20 +158,18 @@ export default {
         author_describe: this.textarea,
         author_age: this.$refs.old.selected.label,
       };
-      const path =
-        "http://192.168.111.142:8080/api/author/information/modification";
-      axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/author/information/modification";
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
-          this.$store.commit("name", res.data.author_name);
+          this.$store.commit("name", res.data.authorname);
           this.$store.commit("sex", res.data.author_gender);
           this.$store.commit("place", res.data.author_area);
           this.$store.commit("intro", res.data.author_describe);
           this.$store.commit("age", res.data.author_age);
           this.$router.push("/authorinformation");
-          console.log(this.radio, this.place, this.old);
         }
-      }); //用户注册，将用户id存入store
+      });
     },
   },
 };
@@ -172,7 +182,6 @@ export default {
 }
 ul {
   margin-top: 50px;
-  height: 65vh;
   margin-left: 50px;
 }
 ul li {
@@ -184,23 +193,29 @@ ul li {
 .el-button {
   margin-left: 5vw;
 }
-
 .el-textarea {
   width: 250px;
 }
-
 .avatar-uploader {
-  border: 1px dashed #120f0f;
-  border-radius: 6px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  width: 278px;
+  height: 278px;
+  background-color: rgb(235, 252, 247);
+  border: 1px dashed #7a7b7b;
+}
+.avatar-uploader:hover {
+  border: 1px dashed #c93b28;
 }
 .avatar-uploader-icon {
-  font-size: 50px;
-  color: #b22a45;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
+  font-size: 48px;
+  width: 278px;
+  height: 278px;
+  line-height: 278px;
+  text-align: center;
+}
+.avatar {
+  width: 278px;
+  height: 278px;
+  display: block;
 }
 </style>

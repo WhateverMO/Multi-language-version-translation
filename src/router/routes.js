@@ -53,8 +53,16 @@ export default [
         component: () => import('@/pages/information/collect'),
     },
     {
+        path: '/attention',
+        component: () => import('@/pages/information/attention'),
+    },
+    {
         path: '/checkinformation',
         component: () => import('@/pages/information/checkinformation'),
+    },
+    {
+        path: '/searchbook',
+        component: () => import('@/pages/readbook/searchbook'),
     },
     {
         path: '/introbook',
@@ -72,6 +80,10 @@ export default [
     {
         path: '/write',
         component: () => import('@/pages/addbook/write'),
+    },
+    {
+        path: '/authorbook',
+        component: () => import('@/pages/addbook/authorbook'),
     },
     {
         path: '/choose',

@@ -2,10 +2,10 @@
   <div class="all">
     <div class="first">
       <ul>
-        <li>图书名字：{{ firstname }}</li>
-        <li>作品类型：{{ firstclass }}</li>
-        <li>语言种类：{{ firstlang }}</li>
-        <li>作品简介:{{ firstintro }}</li>
+        <li>图书名字：{{ books.book_name }}</li>
+        <li>作品类型：{{ books.book_class }}</li>
+        <li>语言种类：{{ books.lang_name }}</li>
+        <li>作品简介:{{ books.book_desc }}</li>
       </ul>
     </div>
     <div class="new">
@@ -63,7 +63,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   data() {
     return {
@@ -123,47 +123,47 @@ export default {
           label: "韩语",
         },
       ],
-      translatename: "",
+      translatename: "", //翻译之后
       translateintro: "",
       translateclass: "",
-      translatelang: "", //翻译之后
-      firstname: "",
-      firstlang: "",
-      firstintro: "",
-      firstclass: "", //原始版本的书的信息
-      firstlangid: "",
-      firstbookid: "", //翻译之后
+      translatelang: "",
+      transbook: "", //翻译之前
+      books: {},
     };
   },
   methods: {
     write() {
       var data = {
         name: this.translatename,
+        //语言id
         new_lang_id: this.$refs.translatelang.selected.value,
-        book_desc: this.translateintro,
+        //简介
+        book_describe: this.translateintro,
+        //类型id
         bc_id: this.$refs.translateclass.selected.value,
-        lang_id: this.fristlangid,
       };
-      const path =
-        "http://localhost:5000/api/author/translate_option/" +
-        this.$store.state.firstbookid;
-      axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "api/author/translate_option/" + this.transbook;
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
-          this.$store.commit("translatebookid", res.data.new_book_id);
+          sessionStorage.setItem(
+            "langid",
+            this.$refs.translatelang.selected.value
+          );
+          sessionStorage.setItem("contentno", 1);
+          sessionStorage.setItem("newstanslate", res.data.new_book_id);
           this.$router.push("/translation");
         }
       }); //post带参数
     },
   },
   mounted() {
-    this.$bus.$on("first", (first) => {
-      this.firstname = first.book_name;
-      this.firstclass = first.book_class;
-      this.firstintro = first.book_desc;
-      this.firstlang = first.lang_name;
-      this.firstlangid = first.lang_id;
-    });
+    this.transbook = sessionStorage.getItem("transbook");
+    request
+      .get("/api/author/translate_option/" + this.transbook)
+      .then((res) => {
+        this.books = res.data;
+      });
   },
 };
 </script>
@@ -171,23 +171,31 @@ export default {
 <style scoped>
 .all {
   display: flex;
-  justify-content: space-around;
   height: 60vh;
   margin-top: 10vh;
 }
 .new li {
   margin-bottom: 25px;
 }
+.new {
+  margin-left: 10vw;
+}
 .first li {
-  margin-bottom: 70px;
+  margin-bottom: 50px;
 }
 .first {
-  width: 700px;
+  margin-top: 20px;
+  width: 400px;
+  margin-left: 20vw;
+  letter-spacing: 2px;
 }
 .el-input {
   width: 150px;
 }
 .el-textarea {
   width: 250px;
+}
+.el-button {
+  width: 200px;
 }
 </style>

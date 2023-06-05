@@ -55,9 +55,11 @@ export default {
       };
       const path = "/api/user/register";
       await request.post(path, qs.stringify(data)).then((res) => {
+        console.log(res);
         alert(res.data.msg);
         if (res.data.code == 200) {
           alert("你的用户id是:" + res.data.user_id);
+          sessionStorage.setItem("id", res.data.user_id);
           this.$store.commit("id", res.data.user_id);
           this.$store.commit("name", this.name);
           this.$store.commit("image", res.data.picture);

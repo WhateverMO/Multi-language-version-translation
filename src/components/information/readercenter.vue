@@ -3,11 +3,12 @@
     <div id="l">
       <img :src="$store.state.image" alt="" width="200px" height="200px" />
       <div class="intro">
-        <span>我的关注</span><span>我的喜欢</span
+        <span @click="attention">我的关注</span><span>我的喜欢</span
         ><span @click="collect">我的收藏</span>
       </div>
       <div class="num">
-        <span>0</span><span>0</span><span>{{ length }}</span>
+        <span>{{ this.attentionlength }}</span
+        ><span>0</span><span>{{ this.collectlength }}</span>
       </div>
     </div>
     <div id="c">
@@ -41,7 +42,8 @@ import request from "@/request";
 export default {
   data() {
     return {
-      length: "",
+      collectlength: 0,
+      attentionlength: 0,
     };
   },
   methods: {
@@ -51,13 +53,23 @@ export default {
     collect() {
       this.$router.push("/collect");
     },
+    attention() {
+      this.$router.push("/attention");
+    },
   },
   mounted() {
-    request
-      .get("http://192.168.111.142:8080/api/user/get_collection")
-      .then((res) => {
-        this.length = res.data.collect_books.length;
-      }); //拿收藏记录
+    request.get("/api/user/information").then((res) => {
+      console.log(res.data);
+      this.attentionlength = res.data.following_count;
+      this.collectlength = res.data.collect_count;
+      this.$store.commit("name", res.data.username);
+      this.$store.commit("sex", res.data.user_gender);
+      this.$store.commit("place", res.data.user_area);
+      this.$store.commit("intro", res.data.user_describe);
+      this.$store.commit("age", res.data.user_age);
+      this.$store.commit("id", res.data.user_id);
+      this.$store.commit("image", res.data.user_avatar);
+    }); //给session发请求拿用户信息
   },
 };
 </script>
@@ -68,9 +80,10 @@ export default {
   justify-content: center;
   margin-top: 50px;
   margin-bottom: 50px;
+  margin-left: 200px;
 }
 #c {
-  margin-left: 80px;
+  margin-left: 150px;
 }
 #c div {
   margin-bottom: 20px;

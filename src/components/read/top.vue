@@ -17,17 +17,13 @@
       <el-menu-item index="7">推理</el-menu-item>
       <el-menu-item index="8">言情</el-menu-item>
       <el-menu-item index="9">更多</el-menu-item>
-      <el-menu-item index="8" @click="back">退出登录</el-menu-item>
-      <div class="search">
-        <el-input v-model="input" placeholder="请输入内容"></el-input>
-        <el-button type="primary" plain>搜索</el-button>
-      </div>
+      <el-menu-item index="10" @click="back">退出登录</el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "top",
   data() {
@@ -37,8 +33,8 @@ export default {
   },
   methods: {
     back() {
-      const path = "http://192.168.111.142:8080/api/user/logout";
-      axios.delete(path).then((res) => {
+      const path = "/api/user/logout";
+      request.delete(path).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/");

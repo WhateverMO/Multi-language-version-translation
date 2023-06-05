@@ -13,11 +13,15 @@
         <el-menu-item index="3-1" @click="write">创建新书</el-menu-item>
         <el-menu-item index="3-2" @click="translate">翻译新书</el-menu-item>
       </el-submenu>
+      <el-menu-item index="9" @click="book">作者作品</el-menu-item>
       <el-menu-item index="6" @click="author">作者信息</el-menu-item>
       <el-menu-item index="2">rt-books</el-menu-item>
-      <el-menu-item index="5">欢迎光临</el-menu-item>
       <el-menu-item index="8" @click="check">修改密码</el-menu-item>
       <el-menu-item index="7" @click="back">退出登录</el-menu-item>
+      <div class="search">
+        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <el-button type="primary" plain @click="search">搜索</el-button>
+      </div>
     </el-menu>
   </div>
 </template>
@@ -56,18 +60,37 @@ export default {
         }
       }); //退出登录
     },
+    search() {
+      request.get("/api/author/book/search/" + this.input).then((res) => {
+        console.log(res.data);
+        setTimeout(() => {
+          this.$bus.$emit("searchbooks", res.data.books);
+        }, 1000);
+        this.$router.push("/searchbook");
+      }); //给首页发请求拿数据
+    },
+    book() {
+      this.$router.push("/authorbook");
+    },
   },
 };
 </script>
 
 <style scoped >
 .el-menu.el-menu--horizontal {
-  height: 10vh;
+  height: 8vh;
   display: flex;
   justify-content: space-between;
 }
 .el-menu-item {
-  margin-left: 5%;
-  font-size: 120%;
+  width: 20px;
+}
+.el-input {
+  width: 300px;
+  margin-top: 10px;
+}
+.el-button {
+  width: 100px;
+  margin: auto;
 }
 </style>

@@ -1,29 +1,21 @@
 <template>
   <div class="all">
     <ul class="first">
-      <li id="section">
-        <el-select v-model="contentno" ref="contentno" placeholder="请选择">
-          <el-option
-            @click.native="change"
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </li>
       <li id="name">{{ title }}</li>
-
       <li id="content">
-        <textarea rows="30" cols="70">{{ content }}</textarea>
+        <textarea rows="30" cols="70" @mouseup="getSelectedText">{{
+          content
+        }}</textarea>
+        <el-button type="primary" @click="pre">上一章</el-button>
+        <el-button type="primary" @click="next">下一章</el-button>
+        <el-button type="primary" @click="robot">机器翻译</el-button>
       </li>
     </ul>
     <ul class="translate">
       <li>
         章节名字：<el-input
           v-model="translatetitle"
-          placeholder="请输入图书名字"
+          placeholder="请输入翻译后的章节名字"
         ></el-input>
       </li>
       <li id="content">
@@ -39,86 +31,121 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   data() {
     return {
-      options: [
-        {
-          value: "1",
-          label: "第一章",
-        },
-        {
-          value: "2",
-          label: "第二章",
-        },
-        {
-          value: "3",
-          label: "第三章",
-        },
-        {
-          value: "4",
-          label: "第四章",
-        },
-        {
-          value: "5",
-          label: "第五章",
-        },
-      ],
       content: "",
       title: "",
-      contentno: "1",
+      contentno: "",
       translatetitle: "",
       translatecontent: "",
+      selectedText: "",
+      langid: "",
     };
   },
   mounted() {
-    axios
+    this.transbook = sessionStorage.getItem("transbook");
+    this.newstanslate = sessionStorage.getItem("newstanslate");
+    this.contentno = sessionStorage.getItem("contentno");
+    this.langid = sessionStorage.getItem("langid");
+    request
       .get(
-        "http://localhost:5000/api/author/translate/" +
-          this.$store.state.firstbookid +
+        "/api/author/translate/" +
+          this.transbook +
           "/" +
-          this.$store.state.translatebookid +
+          this.newstanslate +
           "/" +
-          1
+          this.contentno
       )
       .then((res) => {
         this.content = res.data.content;
         this.title = res.data.title;
-      }); //拿最初版本书的第一章内容
+      }); //获取对照翻译的内容
+    console.log(sessionStorage.getItem("checkstransno"));
+    if (sessionStorage.getItem("checkstransno")) {
+      request
+        .get(
+          "/api/author/get_my_books/" + this.newstanslate + "/" + this.contentno
+        )
+        .then((res) => {
+          console.log(res.data);
+          this.translatecontent = res.data.content_text;
+          this.translatetitle = res.data.title;
+        }); //获取自己写过的内容
+    }
   },
   methods: {
     hand() {
       var data = {
         text: this.translatecontent,
         title: this.translatetitle,
-        contentnum: this.$refs.contentno.selected.value,
+        contentnum: this.contentno,
       };
       const path =
-        "http://localhost:5000/api/author/translate/" +
-        this.$store.state.firstbookid +
+        "/api/author/translate/" +
+        this.transbook +
         "/" +
-        this.$store.state.translatebookid +
+        this.newstanslate +
         "/" +
-        this.$refs.contentno.selected.value;
-      axios.post(path, qs.stringify(data)).then((res) => {
+        this.contentno;
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
+        this.translatetitle = "";
+        this.translatecontent = "";
+        this.next();
       }); //post提交新翻译的内容
     },
-    change() {
-      axios
-        .get(
-          "http://localhost:5000/api/author/translate/" +
-            this.$store.state.firstbookid +
-            "/" +
-            this.$store.state.translatebookid +
-            "/" +
-            this.$refs.contentno.selected.value
-        )
+    getSelectedText() {
+      var selection = window.getSelection();
+      var selectedText = selection.toString();
+      this.selectedText = selectedText;
+    },
+    robot() {
+      this.getSelectedText();
+      var data = {
+        text: this.selectedText,
+      };
+      console.log(this.selectedText);
+      request
+        .post("/api/author/ai_translate/" + this.langid, qs.stringify(data))
         .then((res) => {
-          this.content = res.data.content;
-          this.title = res.data.title;
-        }); //拿最初版本书的第一章内容
+          console.log(res.data);
+          if (res.data.code == 200) {
+            alert(res.data.msg);
+            this.translatecontent += res.data.trans_text;
+          }
+        });
+    },
+    pre() {
+      this.contentno = parseInt(this.contentno) - 1;
+      const path =
+        "/api/author/translate/" +
+        this.transbook +
+        "/" +
+        this.newstanslate +
+        "/" +
+        this.contentno;
+      request.get(path).then((res) => {
+        this.content = res.data.content;
+        this.title = res.data.title;
+        sessionStorage.setItem("contentno", this.contentno);
+      }); //post提交新翻译的内容
+    },
+    next() {
+      this.contentno = parseInt(this.contentno) + 1;
+      const path =
+        "/api/author/translate/" +
+        this.transbook +
+        "/" +
+        this.newstanslate +
+        "/" +
+        this.contentno;
+      request.get(path).then((res) => {
+        this.content = res.data.content;
+        this.title = res.data.title;
+        sessionStorage.setItem("contentno", this.contentno);
+      }); //post提交新翻译的内容
     },
   },
 };
@@ -126,21 +153,34 @@ export default {
 
 <style scoped>
 .all {
-  height: 80vh;
   display: flex;
-  justify-content: space-around;
-  margin-top: 5vh;
+  margin-top: 2vh;
 }
 textarea {
   background-color: transparent;
+  padding: 20px;
+  letter-spacing: 2px;
+  font-size: 15px;
+  width: 35vw;
 }
 #name {
   margin-left: 10vw;
-}
-#all2 {
-  margin-top: 8vh;
+  margin-bottom: 20px;
+  font-size: 20px;
+  margin-top: 10px;
 }
 .el-button {
-  margin-left: 50px;
+  margin-top: 10px;
+  margin-left: 80px;
+  margin-bottom: 20px;
+}
+.first {
+  margin-left: 10vw;
+}
+.translate {
+  margin-right: 5vw;
+}
+.translate li {
+  margin-bottom: 10px;
 }
 </style>

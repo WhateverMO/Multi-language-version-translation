@@ -32,7 +32,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "checkpassword",
   data() {
@@ -49,8 +49,8 @@ export default {
         password: this.password,
         new_password: this.password2,
       };
-      const path = "http://192.168.111.142:8080/api/user/checkpassword";
-      axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/user/checkpassword";
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/");

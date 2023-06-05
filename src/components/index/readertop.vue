@@ -25,6 +25,7 @@
 
 <script>
 import request from "@/request";
+import qs from "qs";
 export default {
   name: "top",
   data() {
@@ -49,16 +50,17 @@ export default {
       this.$router.push("/checkpassword");
     },
     search() {
-      request.get("/api/user/book/search/" + this.input).then((res) => {
-        setTimeout(() => {
-          this.$bus.$emit("introduce", res.data);
-          this.$bus.$emit("bookid", this.input);
-        }, 1000);
-        this.$router.push("/introbook");
-      }); //给首页发请求拿数据
+      var data = { book_name: this.input };
+      request.post("/api/user/book/search", qs.stringify(data)).then((res) => {
+        if (res.data.code != 200) {
+          alert(res.data.msg);
+        } else {
+          sessionStorage.setItem("searchcontent", this.input);
+          this.$router.push("/searchbook");
+        }
+      });
     },
   },
-  mounted() {},
 };
 </script>
 
@@ -73,10 +75,8 @@ el-menu-item {
 }
 .el-input {
   width: 300px;
-  margin-top: 10px;
 }
 .el-button {
   width: 100px;
-  margin: auto;
 }
 </style>

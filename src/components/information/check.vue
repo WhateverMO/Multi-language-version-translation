@@ -3,7 +3,7 @@
     <ul>
       <el-upload
         class="avatar-uploader"
-        action="/api/user/information/modification/update_avatar"
+        action="http://43.138.162.174/api/user/information/modification/update_avatar"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
@@ -67,6 +67,7 @@
 <script>
 import qs from "qs";
 import request from "@/request";
+import store from "@/store";
 export default {
   data() {
     return {
@@ -114,28 +115,25 @@ export default {
           label: "北京",
         },
       ],
-      radio: "",
-      input: "",
-      textarea: "",
-      old: "",
-      place: "",
-      imageUrl: "",
+      radio: store.state.sex,
+      input: store.state.name,
+      textarea: store.state.intro,
+      old: store.state.age,
+      place: store.state.place,
+      imageUrl: store.state.image,
+      formData: "",
     };
   },
 
   methods: {
     handleAvatarSuccess(res, files) {
       this.imageUrl = URL.createObjectURL(files.raw);
-      console.log(res, files);
       var formData = new FormData();
       formData.append("file", files.raw, files.name);
-      console.log(formData.get("file"));
       const path = "/api/user/information/modification/update_avatar";
       request.post(path, formData).then((res) => {
-        alert(res.data.msg);
         if (res.data.code == 200) {
-          console.log(123);
-          // this.$router.push("/readerinformation");
+          alert(res.data.msg);
         }
       });
     },
@@ -151,7 +149,6 @@ export default {
       }
       return isJPG && isLt2M;
     },
-
     checkinfo() {
       var data = {
         username: this.input,
@@ -162,6 +159,7 @@ export default {
       };
       const path = "/api/user/information/modification";
       request.post(path, qs.stringify(data)).then((res) => {
+        console.log(res.data);
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$store.commit("name", res.data.username);

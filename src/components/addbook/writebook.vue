@@ -1,56 +1,6 @@
 <template>
   <div class="all">
     <div>
-      <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-        <el-radio-button :label="false">展开</el-radio-button>
-        <el-radio-button :label="true">收起</el-radio-button>
-      </el-radio-group>
-      <el-menu
-        default-active="1-4-1"
-        class="el-menu-vertical-demo"
-        @open="handleOpen"
-        @close="handleClose"
-        :collapse="isCollapse"
-      >
-        <el-submenu index="1">
-          <template slot="title">
-            <i class="el-icon-reading"></i>
-            <span slot="title">已发布</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="2">
-          <template slot="title">
-            <i class="el-icon-edit"></i>
-            <span slot="title">草稿箱</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title">
-            <i class="el-icon-delete-solid"></i>
-            <span slot="title">回收站</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">选项1</el-menu-item>
-            <el-menu-item index="3-2">选项2</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="4">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">创建新章节</span>
-          </template>
-        </el-submenu>
-      </el-menu>
-    </div>
-    <div>
       <el-drawer
         title="作家的话"
         :visible.sync="drawer"
@@ -62,7 +12,7 @@
           id=""
           cols="60"
           rows="35"
-          placeholder="在此输入正文"
+          placeholder="在此输入正文内容"
         ></textarea>
         <el-button
           @click="drawer = true"
@@ -76,10 +26,13 @@
 
     <div class="center">
       <div>
-        <el-input v-model="contentno" placeholder="请输入章节号"></el-input>
+        章节：<el-input
+          v-model="contentno"
+          placeholder="请输入章节号"
+        ></el-input>
       </div>
       <div>
-        <el-input v-model="title" placeholder="请输入章节名"></el-input>
+        名称：<el-input v-model="title" placeholder="请输入章节名"></el-input>
       </div>
       <div>
         <textarea
@@ -110,7 +63,8 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+
+import request from "@/request";
 export default {
   data() {
     return {
@@ -121,6 +75,7 @@ export default {
       content: "",
       contentno: "",
       newbookid: "",
+      flag: false,
     };
   },
   methods: {
@@ -131,35 +86,57 @@ export default {
         })
         .catch((_) => {});
     },
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
     hand() {
       var data = {
         content: this.content,
         title: this.title,
       };
-      console.log(this.newbookid);
-      axios
-        .post(
-          "http://localhost:5000/api/author/addbooks/" +
-            this.newbookid +
-            "/" +
-            this.contentno,
-          qs.stringify(data)
-        )
-        .then((res) => {
-          alert(res.data.msg);
-        }); //post带参数的登录请求
+      if (!this.flag) {
+        request
+          .post(
+            "/api/author/addbooks/" + this.newbookid + "/" + this.contentno,
+            qs.stringify(data)
+          )
+          .then((res) => {
+            alert(res.data.msg);
+            this.content = "";
+            this.title = "";
+            this.contentno = "";
+          });
+      } else {
+        request
+          .post(
+            "/api/author/edit_my_books/" +
+              this.newbookid +
+              "/" +
+              this.contentno,
+            qs.stringify(data)
+          )
+          .then((res) => {
+            alert(res.data.msg);
+            sessionStorage.removeItem("checkno");
+            this.content = "";
+            this.title = "";
+            this.contentno = "";
+          });
+      }
     },
   },
   mounted() {
-    this.$bus.$on("createid", (newid) => {
-      this.newbookid = newid;
-    });
+    this.newbookid = sessionStorage.getItem("newbookid");
+    this.contentno = sessionStorage.getItem("checkno");
+    if (this.checkno != 0) {
+      this.flag = true;
+      request
+        .get(
+          "/api/author/get_my_books/" + this.newbookid + "/" + this.contentno
+        )
+        .then((res) => {
+          console.log(res.data);
+          this.content = res.data.content_text;
+          this.title = res.data.title;
+        });
+    }
   },
 };
 </script>
@@ -170,11 +147,15 @@ export default {
   min-height: 400px;
 }
 .all {
-  display: flex;
-  justify-content: space-between;
+  margin: auto;
+}
+.el-button {
+  width: 200px;
 }
 .center {
-  margin-right: 20vw;
+  margin-left: 25vw;
+  height: 700px;
+  margin-top: 20px;
 }
 .center div {
   margin-bottom: 10px;

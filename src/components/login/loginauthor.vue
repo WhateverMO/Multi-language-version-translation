@@ -30,7 +30,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "logincenter",
   data() {
@@ -48,25 +48,23 @@ export default {
         author_id: this.user_id,
         password: this.password,
       };
-      const path = "http://localhost:5000/api/author/login";
-      await axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/author/login";
+      await request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/author");
+          sessionStorage.setItem("id", this.user_id);
           this.$store.commit("id", this.user_id);
         }
       }); //post带参数的登录请求
 
-      await axios
-        .get("http://localhost:5000/api/author/information")
-        .then((res) => {
-          sessionStorage.setItem("id", res.data.author_id);
-          this.$store.commit("name", res.data.author_name);
-          this.$store.commit("age", res.data.author_age);
-          this.$store.commit("sex", res.data.author_gender);
-          this.$store.commit("place", res.data.author_area);
-          this.$store.commit("intro", res.data.author_describe);
-        }); //拿作者信息
+      await request.get("/api/author/information").then((res) => {
+        this.$store.commit("name", res.data.author_name);
+        this.$store.commit("age", res.data.author_age);
+        this.$store.commit("sex", res.data.author_gender);
+        this.$store.commit("place", res.data.author_area);
+        this.$store.commit("intro", res.data.author_describe);
+      }); //拿作者信息
     },
   },
 };

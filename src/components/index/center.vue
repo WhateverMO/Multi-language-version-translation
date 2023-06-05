@@ -20,7 +20,7 @@
     <div class="reconmend">
       <h2>{{ $t("m.BookRecommendationList") }}</h2>
       <div class="content">
-        <div class="week">
+        <div class="week" v-if="this.books[0]">
           <ul>
             {{
               $t("m.Recommendedweekly")
@@ -30,7 +30,7 @@
             <li class="box">
               <img
                 @click="intro1"
-                :src="books[0][4]"
+                :src="this.books[0][4]"
                 height="200px"
                 width="200px"
                 alt=""
@@ -56,7 +56,7 @@
             </li>
           </div>
         </div>
-        <div class="week">
+        <div class="week" v-if="this.books[1]">
           <ul>
             {{
               $t("m.Recommendedweekly")
@@ -66,7 +66,7 @@
             <li class="box">
               <img
                 @click="intro2"
-                :src="books[1][4]"
+                :src="this.books[1][4]"
                 height="200px"
                 width="200px"
                 alt=""
@@ -91,8 +91,7 @@
             </li>
           </div>
         </div>
-
-        <div class="week">
+        <div class="week" v-if="this.books[2]">
           <ul>
             {{
               $t("m.Editorsrecommendation")
@@ -101,7 +100,8 @@
           <div class="onebook">
             <li class="box">
               <img
-                :src="books[2][4]"
+                v-if="books[2][4]"
+                :src="this.books[2][4]"
                 height="200px"
                 width="200px"
                 alt=""
@@ -128,7 +128,7 @@
             </li>
           </div>
         </div>
-        <div class="week">
+        <div class="week" v-if="this.books[3]">
           <ul>
             {{
               $t("m.Latestrecommendation")
@@ -137,7 +137,8 @@
           <div class="onebook">
             <li class="box">
               <img
-                :src="books[3][4]"
+                v-if="books[3][4]"
+                :src="this.books[3][4]"
                 height="200px"
                 width="200px"
                 alt=""
@@ -177,7 +178,9 @@
       <h2 class="title">{{ $t("m.Popularbooks") }}</h2>
       <div id="book">
         <ul v-for="(item, index) in hotbooks" :key="index">
-          <div class="img"><img :src="item[4]" alt="" /></div>
+          <div class="img" v-if="item[4]">
+            <img :src="item[4]" alt="" @click="watch(item[0])" />
+          </div>
           <div class="right">
             <li class="name">{{ item[1] }}</li>
             <li class="bintro">{{ item[3] }}</li>
@@ -194,45 +197,74 @@
       <h2 class="title">读者分享</h2>
       <div class="dan">
         <div class="track">
-          <div class="child child-1">我是弹幕</div>
+          <div class="child child-1" v-if="barrages[0]">
+            {{ barrages[0]["user_name"] }}:{{ barrages[0]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-2">我是弹幕</div>
+          <div class="child child-2" v-if="barrages[1]">
+            {{ barrages[1]["user_name"] }}:{{ barrages[1]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-3">我是弹幕</div>
+          <div class="child child-3" v-if="barrages[2]">
+            {{ barrages[2]["user_name"] }}:{{ barrages[2]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-4">我是弹幕</div>
+          <div class="child child-4" v-if="barrages[3]">
+            {{ barrages[3]["user_name"] }}:{{ barrages[3]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-5">我是弹幕</div>
+          <div class="child child-5" v-if="barrages[4]">
+            {{ barrages[4]["user_name"] }}:{{ barrages[4]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-6">我是弹幕</div>
+          <div class="child child-6" v-if="barrages[5]">
+            {{ barrages[5]["user_name"] }}:{{ barrages[5]["barrage"] }}
+          </div>
         </div>
         <div class="track">
-          <div class="child child-7">我是弹幕</div>
+          <div class="child child-7" v-if="barrages[6]">
+            {{ barrages[6]["user_name"] }}:{{ barrages[6]["barrage"] }}
+          </div>
+        </div>
+        <div class="track">
+          <div class="child child-8" v-if="barrages[7]">
+            {{ barrages[7]["user_name"] }}:{{ barrages[7]["barrage"] }}
+          </div>
+        </div>
+        <div class="track">
+          <div class="child child-9" v-if="barrages[8]">
+            {{ barrages[8]["user_name"] }}:{{ barrages[8]["barrage"] }}
+          </div>
+        </div>
+        <div class="track">
+          <div class="child child-10" v-if="barrages[9]">
+            {{ barrages[9]["user_name"] }}:{{ barrages[9]["barrage"] }}
+          </div>
         </div>
       </div>
       <div class="bottom">
         <el-input
-          type="textarea"
+          type="text"
           :rows="2"
           placeholder="请输入弹幕内容"
           v-model="textarea"
           class="send"
         >
         </el-input>
-        <el-button class="submit">提交</el-button>
+        <el-button class="submit" @click="barrige">提交</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import request from "@/request";
+import qs from "qs";
 export default {
   name: "center",
   data() {
@@ -243,52 +275,46 @@ export default {
       hotbooks: [[]],
       flag: 1,
       textarea: "",
+      barrages: [{}],
     };
   },
   methods: {
     intro1() {
-      request
-        .get("/api/user/read_book/introduce/" + this.books[0][0])
-        .then((res) => {
-          setTimeout(() => {
-            this.$bus.$emit("introduce", res.data);
-            this.$bus.$emit("bookid", this.books[0][0]);
-          }, 1000);
-          this.$router.push("/introbook");
-        }); //给首页发请求拿数据;
+      sessionStorage.setItem("bookid", this.books[0][0]);
+      this.$router.push("/introbook");
     },
     intro2() {
-      request
-        .get("/api/user/read_book/introduce/" + this.books[1][0])
-        .then((res) => {
-          setTimeout(() => {
-            this.$bus.$emit("introduce", res.data);
-            this.$bus.$emit("bookid", this.books[1][0]);
-          }, 1000);
-          this.$router.push("/introbook");
-        }); //给首页发请求拿数据
+      sessionStorage.setItem("bookid", this.books[1][0]);
+      this.$router.push("/introbook");
     },
     intro3() {
-      axios
-        .get("/api/user/read_book/introduce/" + this.books[2][0])
-        .then((res) => {
-          setTimeout(() => {
-            this.$bus.$emit("introduce", res.data);
-            this.$bus.$emit("bookid", this.books[2][0]);
-          }, 1000);
-          this.$router.push("/introbook");
-        }); //给首页发请求拿数据
+      sessionStorage.setItem("bookid", this.books[2][0]);
+      this.$router.push("/introbook");
     },
     intro4() {
-      axios
-        .get("/api/user/read_book/introduce/" + this.books[3][0])
-        .then((res) => {
-          setTimeout(() => {
-            this.$bus.$emit("introduce", res.data);
-            this.$bus.$emit("bookid", this.books[3][0]);
-          }, 1000);
-          this.$router.push("/introbook");
-        }); //给首页发请求拿数据
+      sessionStorage.setItem("bookid", this.books[3][0]);
+      this.$router.push("/introbook");
+    },
+    watch(id) {
+      sessionStorage.setItem("bookid", id);
+      this.$router.push("/introbook");
+    },
+    barrige() {
+      var data = {
+        barrage: this.textarea,
+      };
+      request.post("/api/user/push_barrage", qs.stringify(data)).then((res) => {
+        if (res.data.code == 200) {
+          alert("发送成功");
+          this.textarea = "";
+          request.get("/api/user/get_barrage").then((res) => {
+            console.log(res.data);
+            this.barrages = res.data.barrages;
+          });
+        } else {
+          alert("请登录后再发送弹幕哦~");
+        }
+      });
     },
   },
 
@@ -296,8 +322,11 @@ export default {
     request.get("/api").then((res) => {
       this.hotbooks = res.data.hot_books;
       this.books = res.data.books;
-      this.lun = res.data.lun;
+      this.imglist = res.data.lun;
     }); //给首页发请求拿数据
+    request.get("/api/user/get_barrage").then((res) => {
+      this.barrages = res.data.barrages;
+    });
   },
 };
 </script>
@@ -455,20 +484,19 @@ export default {
   margin: 10px auto 0;
   overflow: hidden;
   margin-left: 5vw;
-  height: 500px;
+  height: 400px;
   padding-bottom: 20px;
 }
 .dan {
-  background-color: rgb(244, 240, 235);
+  background-color: rgb(247, 247, 243);
 }
 .track {
-  height: 40px;
+  height: 20px;
   line-height: 40px;
   margin-bottom: 5px;
 }
 
 .child {
-  width: 80px;
   line-height: 20px;
   margin-bottom: 10px;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
@@ -478,20 +506,20 @@ export default {
   color: brown;
   text-shadow: 2px 2px 3px rgb(248, 81, 20);
   transform: translateX(1000px);
-  animation: scrollTo linear 4s infinite;
+  animation: scrollTo linear 8s infinite;
 }
 
 .child-2 {
   color: rgb(127, 197, 35);
   text-shadow: 2px 2px 3px rgb(173, 255, 80);
   transform: translateX(1050px);
-  animation: scrollTo linear 7s infinite;
+  animation: scrollTo linear 10s infinite;
 }
 .child-3 {
   color: coral;
   text-shadow: 2px 2px 3px coral;
   transform: translateX(800px);
-  animation: scrollTo linear 5s infinite;
+  animation: scrollTo linear 7s infinite;
 }
 .child-4 {
   color: rgb(76, 140, 218);
@@ -503,19 +531,37 @@ export default {
   color: rgb(234, 30, 118);
   text-shadow: 2px 2px 3px rgb(235, 84, 29);
   transform: translateX(1100px);
-  animation: scrollTo linear 4s infinite;
+  animation: scrollTo linear 12s infinite;
 }
 .child-6 {
   color: rgb(144, 20, 169);
   text-shadow: 2px 2px 3px rgb(161, 27, 179);
   transform: translateX(1050px);
-  animation: scrollTo linear 4s infinite;
+  animation: scrollTo linear 15s infinite;
 }
 .child-7 {
   color: rgb(47, 15, 145);
-  text-shadow: 2px 2px 3px rgb(30, 5, 143);
+  text-shadow: 2px 2px 3px rgb(63, 29, 217);
   transform: translateX(1200px);
-  animation: scrollTo linear 5s infinite;
+  animation: scrollTo linear 11s infinite;
+}
+.child-10 {
+  color: rgb(107, 161, 119);
+  text-shadow: 2px 2px 3px rgb(30, 190, 16);
+  transform: translateX(1200px);
+  animation: scrollTo linear 8s infinite;
+}
+.child-8 {
+  color: rgb(219, 12, 12);
+  text-shadow: 2px 2px 3px rgb(99, 10, 23);
+  transform: translateX(1200px);
+  animation: scrollTo linear 13s infinite;
+}
+.child-9 {
+  color: rgb(128, 126, 134);
+  text-shadow: 2px 2px 3px rgb(176, 19, 92);
+  transform: translateX(1200px);
+  animation: scrollTo linear 12s infinite;
 }
 @keyframes scrollTo {
   to {

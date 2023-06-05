@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <ul>
       <li>
         图书名字：<el-input
@@ -38,33 +38,50 @@
         </el-select>
       </li>
       <li>
-        作品简介:<el-input
+        作品简介:
+        <el-input
           type="textarea"
-          :rows="2"
+          :rows="4"
+          :maxlength="40"
           placeholder="请输入内容"
           v-model="bookintro"
         >
         </el-input>
       </li>
-      <li><el-button type="primary" @click="write">创建图书</el-button></li>
+      <li><el-button type="primary" @click="write">上传图书信息</el-button></li>
+    </ul>
+    <ul>
+      <el-upload
+        class="avatar-uploader"
+        action="http://43.138.162.174/api/author/add_books_index"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+      <li class="cover">
+        <el-button type="primary">上传图书封面</el-button>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   data() {
     return {
       kind: [
         {
           value: "1",
-          label: "新闻",
+          label: "小说",
         },
         {
           value: "2",
-          label: "小说",
+          label: "传记",
         },
         {
           value: "3",
@@ -72,19 +89,39 @@ export default {
         },
         {
           value: "4",
-          label: "冒险",
+          label: "科幻",
         },
         {
           value: "5",
-          label: "悬疑",
+          label: "奇幻",
         },
         {
           value: "6",
-          label: "爱情",
+          label: "悬疑",
         },
         {
           value: "7",
+          label: "推理",
+        },
+        {
+          value: "8",
           label: "恐怖",
+        },
+        {
+          value: "9",
+          label: "浪漫",
+        },
+        {
+          value: "10",
+          label: "青春",
+        },
+        {
+          value: "11",
+          label: "散文",
+        },
+        {
+          value: "12",
+          label: "哲学",
         },
       ],
       lang: [
@@ -98,7 +135,7 @@ export default {
         },
         {
           value: "3",
-          label: "德语",
+          label: "西班牙语",
         },
         {
           value: "4",
@@ -106,17 +143,40 @@ export default {
         },
         {
           value: "5",
-          label: "日语",
+          label: "德语",
         },
         {
           value: "6",
+          label: "意大利语",
+        },
+        {
+          value: "7",
+          label: "俄语",
+        },
+        {
+          value: "8",
+          label: "阿拉伯语",
+        },
+        {
+          value: "9",
+          label: "日语",
+        },
+        {
+          value: "10",
           label: "韩语",
+        },
+        {
+          value: "11",
+          label: "葡萄牙语",
         },
       ],
       bookname: "",
       bookintro: "",
       bookclass: "",
       booklang: "",
+      picture: new FormData(),
+      imageUrl: "",
+      newbookid: 0,
     };
   },
   methods: {
@@ -127,41 +187,91 @@ export default {
         book_desc: this.bookintro,
         bc_id: this.$refs.bookclass.selected.value,
       };
-      const path = "http://localhost:5000/api/author/add_books_index";
-      axios.post(path, qs.stringify(data)).then((res) => {
-        alert(res.data.msg);
+      console.log(data);
+      const path = "/api/author/add_books_index";
+      request.post(path, qs.stringify(data)).then((res) => {
         if (res.data.code == 200) {
           alert("你的图书编号是" + res.data.book_id);
-          setTimeout(() => {
-            this.$bus.$emit("createid", res.data.book_id);
-          }, 1000);
-          this.$router.push("/write");
+          this.newbookid = res.data.book_id;
+          sessionStorage.setItem("newbookid", res.data.book_id);
         }
       });
+    },
+    handleAvatarSuccess(res, files) {
+      this.imageUrl = URL.createObjectURL(files.raw);
+      this.picture.append("file", files.raw, files.name);
+      request
+        .post("/api/author/add_books_cover/" + this.newbookid, this.picture)
+        .then((res) => {
+          alert(res.data.msg);
+          this.$router.push("/write");
+        });
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
     },
   },
 };
 </script>
 
 <style scoped>
+.box {
+  margin-left: 35vh;
+  margin-top: 80px;
+}
 ul {
-  margin-top: 30px;
-  margin-left: 40vw;
-  height: 70vh;
+  margin-left: 100px;
+  float: left;
 }
 ul li {
-  /* display: flex;
-    justify-content: center; */
-  margin-bottom: 45px;
+  margin-bottom: 30px;
+}
+.avatar-uploader {
+  cursor: pointer;
+  width: 278px;
+  height: 278px;
+  background-color: rgb(235, 252, 247);
+  border: 1px dashed #7a7b7b;
+}
+.avatar-uploader:hover {
+  border: 1px dashed #c93b28;
+}
+.avatar-uploader-icon {
+  font-size: 48px;
+  width: 278px;
+  height: 278px;
+  line-height: 278px;
+  text-align: center;
+}
+.avatar {
+  width: 278px;
+  height: 278px;
+  display: block;
 }
 .el-input {
   width: 150px;
 }
 .el-button {
   margin-left: 5vw;
+  width: 200px;
 }
 
 .el-textarea {
   width: 250px;
+}
+.left {
+  margin-bottom: 200px;
+}
+.cover {
+  margin-top: 50px;
 }
 </style>

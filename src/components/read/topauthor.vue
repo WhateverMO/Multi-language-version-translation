@@ -17,15 +17,14 @@
       <el-menu-item index="7">推理</el-menu-item>
       <el-menu-item index="8">言情</el-menu-item>
       <el-menu-item index="9">更多</el-menu-item>
-      <el-input v-model="input" placeholder="请输入内容"></el-input>
-      <el-button type="primary" plain>搜索</el-button>
-      <el-menu-item index="8" @click="back">退出登录</el-menu-item>
+      <el-menu-item index="10" @click="back">退出登录</el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import request from "@/request";
 export default {
   name: "top",
   data() {
@@ -35,8 +34,8 @@ export default {
   },
   methods: {
     back() {
-      const path = "http://localhost:5000/api/author/logout";
-      axios.delete(path).then((res) => {
+      const path = "/api/author/logout";
+      request.delete(path).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/");
@@ -52,21 +51,19 @@ export default {
 
 <style >
 .el-menu.el-menu--horizontal {
-  height: 10vh;
+  height: 8vh;
   display: flex;
   justify-content: space-between;
 }
-.el-menu-item {
-  margin-left: 5%;
-  font-size: 120%;
+el-menu-item {
+  width: 20px;
 }
 .el-input {
-  width: 20vw;
-  position: relative;
-  margin: auto;
+  width: 300px;
+  margin-top: 10px;
 }
 .el-button {
-  width: 10vw;
+  width: 100px;
   margin: auto;
 }
 </style>

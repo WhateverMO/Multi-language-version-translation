@@ -23,6 +23,9 @@
         <div class="register">
           没有账号，<span class="enroll" @click="enroll">点击注册</span>
         </div>
+        <!-- <div class="find">
+          忘记密码，<span class="enroll" @click="enroll">点击找回</span>
+        </div> -->
       </div>
     </div>
   </div>
@@ -30,6 +33,7 @@
 
 <script>
 import qs from "qs";
+import axios from "axios";
 import request from "@/request";
 export default {
   name: "logincenter",
@@ -50,7 +54,7 @@ export default {
       };
       const path = "/api/user/login";
       await request.post(path, qs.stringify(data)).then((res) => {
-        console.log(res.data);
+        console.log(res);
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$router.push("/reader");
@@ -110,5 +114,9 @@ h2 {
 .enroll:hover {
   cursor: pointer;
   color: red;
+}
+.find {
+  margin-left: 5vw;
+  margin-top: 2vh;
 }
 </style>

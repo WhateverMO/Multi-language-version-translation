@@ -13,7 +13,7 @@
     <div class="zhan"></div>
     <div id="c3">
       <ul>
-        <li class="change">目录</li>
+        <li class="change" @click="intro">目录</li>
         <li @click="collect" class="change">收藏</li>
         <li class="change">点赞</li>
         <li class="change">分享</li>
@@ -29,8 +29,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import qs from "qs";
+import request from "@/request";
+import router from "@/router";
 export default {
   data() {
     return {
@@ -38,89 +39,67 @@ export default {
       title: "",
       bookid: "",
       contentno: "1",
+      bookno: "",
+      maxbookno: "",
     };
   },
   methods: {
     back() {
+      sessionStorage.setItem("bookno", parseInt(this.bookno) + 1);
+      this.bookno = parseInt(this.bookno) + 1;
       let date = new Date();
-      let year = date.getFullYear();
       let month = date.getMonth() + 1;
       let day = date.getDate();
       let h = date.getHours();
       let m = date.getMinutes();
-      let s = date.getSeconds();
-      let time =
-        year +
-        "年" +
-        month +
-        "月" +
-        day +
-        "日" +
-        h +
-        "时" +
-        m +
-        "分" +
-        s +
-        "秒";
+      let time = month + "月" + day + "日" + h + "时" + m + "分";
       var data = {
         user_id: sessionStorage.getItem("id"),
         time: time,
       };
-      this.contentno = this.contentno * 1 + 1;
-      axios
+      request
         .post(
-          "http://localhost:5000/api/user/read_book/start_read/" +
-            this.$store.state.bookid +
-            "/" +
-            this.contentno,
+          "/api/user/read_book/start_read/" + this.bookid + "/" + this.bookno,
           qs.stringify(data)
         )
         .then((res) => {
-          this.content = res.data.content_text;
-          this.title = res.data.title;
+          if (res.data.code != 4001) {
+            this.content = res.data.content_text;
+            this.title = res.data.title;
+          } else {
+            alert(res.data.msg);
+          }
         });
     },
     head() {
-      let date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      let h = date.getHours();
-      let m = date.getMinutes();
-      let s = date.getSeconds();
-      let time =
-        year +
-        "年" +
-        month +
-        "月" +
-        day +
-        "日" +
-        h +
-        "时" +
-        m +
-        "分" +
-        s +
-        "秒";
-      var data = {
-        user_id: sessionStorage.getItem("id"),
-        time: time,
-      };
-      this.contentno = this.contentno * 1 - 1;
-      axios
-        .post(
-          "http://localhost:5000/api/user/read_book/start_read/" +
-            this.$store.state.bookid +
-            "/" +
-            this.contentno,
-          qs.stringify(data)
-        )
-        .then((res) => {
-          this.content = res.data.content_text;
-          this.title = res.data.title;
-        });
+      if (this.bookno != 1) {
+        sessionStorage.setItem("bookno", parseInt(this.bookno) - 1);
+        this.bookno = parseInt(this.bookno) - 1;
+        let date = new Date();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let h = date.getHours();
+        let m = date.getMinutes();
+        let time = month + "月" + day + "日" + h + "时" + m + "分";
+        var data = {
+          user_id: sessionStorage.getItem("id"),
+          time: time,
+        };
+        request
+          .post(
+            "/api/user/read_book/start_read/" + this.bookid + "/" + this.bookno,
+            qs.stringify(data)
+          )
+          .then((res) => {
+            this.content = res.data.content_text;
+            this.title = res.data.title;
+          });
+      } else {
+        alert("当前是第一章节，前面没有内容了");
+      }
     },
     collect() {
-      axios
+      request
         .post(
           "http://localhost:5000/api/user/collect/" + this.$store.state.bookid
         )
@@ -128,19 +107,41 @@ export default {
           alert(res.data.msg);
         });
     },
+    intro() {
+      this.$router.push("/introbook");
+    },
   },
   mounted() {
-    this.$bus.$on("read", (read) => {
-      this.content = read.content_text;
-      this.title = read.title;
-    });
+    this.bookid = sessionStorage.getItem("bookid");
+    this.bookno = sessionStorage.getItem("bookno");
+    this.maxbookno = sessionStorage.getItem("maxbookno");
+    let date = new Date();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    let h = date.getHours();
+    let m = date.getMinutes();
+    let time = month + "月" + day + "日" + h + "时" + m + "分";
+    var data = {
+      user_id: sessionStorage.getItem("id"),
+      time: time,
+    };
+    request
+      .post(
+        "/api/user/read_book/start_read/" + this.bookid + "/" + this.bookno,
+        qs.stringify(data)
+      )
+      .then((res) => {
+        console.log(data);
+        this.content = res.data.content_text;
+        this.title = res.data.title;
+      });
   },
 };
 </script>
 
 <style scoped>
 #c {
-  background: url(../../assets/img/5.jpg);
+  /* background: url(../../assets/img/5.jpg); */
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -149,9 +150,9 @@ export default {
 }
 .content {
   width: 55vw;
-  margin: 50px auto;
+  margin: 20px auto;
   border: 1px solid black;
-
+  background-color: rgb(240, 230, 216);
   padding: 40px;
   font-family: "Courier New", Courier, monospace;
   font-size: 20px;

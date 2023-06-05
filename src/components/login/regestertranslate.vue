@@ -35,7 +35,7 @@
 
 <script>
 import qs from "qs";
-import axios from "axios";
+import request from "@/request";
 export default {
   name: "regestertranslate",
   data() {
@@ -52,12 +52,13 @@ export default {
         password: this.password,
         password2: this.password2,
       };
-      const path = "http://localhost:5000/api/author/register";
-      axios.post(path, qs.stringify(data)).then((res) => {
+      const path = "/api/author/register";
+      request.post(path, qs.stringify(data)).then((res) => {
         alert(res.data.msg);
         if (res.data.code == 200) {
           this.$store.commit("id", res.data.author_id);
           alert("你的作者登录id是" + res.data.author_id);
+          sessionStorage.setItem("id", res.data.author_id);
           this.$store.commit("name", this.authorname);
           this.$store.commit("sex", "");
           this.$store.commit("place", "");

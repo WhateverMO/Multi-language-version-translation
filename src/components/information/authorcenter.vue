@@ -1,11 +1,16 @@
 <template>
   <div class="all">
     <div id="l">
-      <img :src="$store.state.imge" alt="" width="200px" height="200px" />
+      <img :src="$store.state.image" alt="" width="200px" height="200px" />
       <div class="intro">
-        <span>我的粉丝</span><span>我的作品</span><span>我的关注</span>
+        <span>我的粉丝</span><span @click="mybooks">我的作品</span
+        ><span>我的关注</span>
       </div>
-      <div class="num"><span>0</span><span>0</span><span>0</span></div>
+      <div class="num">
+        <span>{{ this.follower_count }}</span
+        ><span>{{ this.works_count }}</span
+        ><span>0</span>
+      </div>
     </div>
     <div id="c">
       <div>
@@ -32,14 +37,34 @@
 </template>
 
 <script>
+import request from "@/request";
 export default {
   data() {
-    return {};
+    return {
+      works_count: 0,
+      follower_count: 0,
+    };
   },
   methods: {
     check() {
       this.$router.push("/checkinformationauthor");
     },
+    mybooks() {
+      this.$router.push("/authorbook");
+    },
+  },
+  mounted() {
+    request.get("/api/author/information").then((res) => {
+      this.follower_count = res.data.follower_count;
+      this.works_count = res.data.works_count;
+      this.$store.commit("name", res.data.author_name);
+      this.$store.commit("sex", res.data.author_gender);
+      this.$store.commit("place", res.data.author_area);
+      this.$store.commit("intro", res.data.author_describe);
+      this.$store.commit("age", res.data.author_age);
+      this.$store.commit("id", res.data.author_id);
+      this.$store.commit("image", res.data.author_avatar);
+    }); //给session发请求拿作者信息
   },
 };
 </script>
@@ -49,7 +74,7 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  height: 50vh;
+  height: 45vh;
 }
 .kind span {
   margin-right: 10px;
@@ -76,8 +101,16 @@ img {
 .intro span {
   margin-right: 10px;
 }
+
+.intro :hover {
+  cursor: pointer;
+  color: red;
+}
 .num span {
   padding-left: 20px;
   padding-right: 50px;
+}
+.el-button {
+  width: 200px;
 }
 </style>
