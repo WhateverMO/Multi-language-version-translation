@@ -1,0 +1,39 @@
+[[source]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = true
+name = "torchCPU"
+
+[packages]
+flask = "==1.1.4"
+redis = "*"
+flask-cors = "*"
+pymysql = "*"
+sqlalchemy = "*"
+flask-script = "*"
+flask-migrate = "*"
+markupsafe = "==2.0.1"
+requests = "*"
+torch = {version="*",index='torchCPU'}
+torchvision = {version="*",index='torchCPU'}
+torchaudio = {version="*",index='torchCPU'}
+torchtext = {version="*",index='torchCPU'}
+jieba = "*"
+transformers = "*"
+sentencepiece = "*"
+sacremoses = "*"
+pytz = "*"
+chardet = "*"
+numpy = "*"
+gunicorn = "*"
+gevent = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.3"
